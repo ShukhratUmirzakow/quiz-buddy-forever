@@ -21,6 +21,7 @@ export interface Quiz {
 export interface QuizSettings {
   shuffleQuestions: boolean;
   shuffleAnswers: boolean;
+  fastMode: boolean;
   questionRange: {
     enabled: boolean;
     start: number;

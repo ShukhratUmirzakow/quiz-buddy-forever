@@ -2,99 +2,104 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
-    --background: 250 100% 98%;
-    --foreground: 250 50% 10%;
+    --background: 0 0% 98%;
+    --foreground: 240 10% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 250 50% 10%;
+    --card-foreground: 240 10% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 250 50% 10%;
+    --popover-foreground: 240 10% 10%;
 
-    --primary: 262 83% 58%;
+    --primary: 265 90% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 262 40% 95%;
-    --secondary-foreground: 262 83% 40%;
+    --secondary: 265 30% 96%;
+    --secondary-foreground: 265 70% 45%;
 
-    --muted: 250 20% 94%;
-    --muted-foreground: 250 20% 45%;
+    --muted: 240 10% 96%;
+    --muted-foreground: 240 10% 50%;
 
     --accent: 175 80% 45%;
     --accent-foreground: 0 0% 100%;
 
-    --success: 142 70% 45%;
+    --success: 152 75% 45%;
     --success-foreground: 0 0% 100%;
 
-    --warning: 38 92% 50%;
+    --warning: 38 95% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 85% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 20% 90%;
-    --input: 250 20% 90%;
-    --ring: 262 83% 58%;
+    --border: 240 10% 92%;
+    --input: 240 10% 92%;
+    --ring: 265 90% 60%;
 
     --radius: 1rem;
 
-    /* Custom gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(262, 83%, 58%) 0%, hsl(280, 80%, 50%) 50%, hsl(262, 83%, 45%) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142, 70%, 45%) 0%, hsl(160, 70%, 50%) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38, 92%, 50%) 0%, hsl(28, 92%, 55%) 100%);
-    --gradient-danger: linear-gradient(135deg, hsl(0, 84%, 60%) 0%, hsl(350, 80%, 55%) 100%);
-    --gradient-hero: linear-gradient(180deg, hsl(262, 83%, 55%) 0%, hsl(280, 75%, 45%) 100%);
+    /* iOS Glass Effects */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    
+    /* Gradients */
+    --gradient-primary: linear-gradient(145deg, hsl(265, 90%, 65%) 0%, hsl(280, 85%, 55%) 100%);
+    --gradient-success: linear-gradient(145deg, hsl(152, 75%, 50%) 0%, hsl(165, 70%, 45%) 100%);
+    --gradient-warning: linear-gradient(145deg, hsl(38, 95%, 55%) 0%, hsl(28, 90%, 50%) 100%);
+    --gradient-danger: linear-gradient(145deg, hsl(0, 85%, 60%) 0%, hsl(350, 80%, 55%) 100%);
+    --gradient-hero: linear-gradient(165deg, hsl(265, 85%, 58%) 0%, hsl(285, 80%, 50%) 50%, hsl(265, 75%, 45%) 100%);
     
     /* Shadows */
-    --shadow-card: 0 10px 40px -10px hsl(262 50% 30% / 0.15);
-    --shadow-button: 0 4px 15px -3px hsl(262 83% 58% / 0.4);
-    --shadow-success: 0 4px 15px -3px hsl(142 70% 45% / 0.4);
-    --shadow-glow: 0 0 30px hsl(262 83% 58% / 0.3);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+    --shadow-glow: 0 0 40px hsl(265 90% 60% / 0.25);
   }
 
   .dark {
-    --background: 250 50% 8%;
+    --background: 240 15% 8%;
     --foreground: 0 0% 98%;
 
-    --card: 250 40% 12%;
+    --card: 240 12% 12%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 250 40% 12%;
+    --popover: 240 12% 12%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 262 83% 65%;
+    --primary: 265 85% 65%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 262 30% 20%;
-    --secondary-foreground: 262 83% 80%;
+    --secondary: 265 25% 18%;
+    --secondary-foreground: 265 80% 80%;
 
-    --muted: 250 30% 18%;
-    --muted-foreground: 250 20% 65%;
+    --muted: 240 15% 18%;
+    --muted-foreground: 240 10% 65%;
 
     --accent: 175 80% 50%;
     --accent-foreground: 0 0% 100%;
 
-    --success: 142 70% 50%;
+    --success: 152 70% 50%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 55%;
     --warning-foreground: 0 0% 100%;
 
-    --destructive: 0 70% 55%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 250 30% 22%;
-    --input: 250 30% 22%;
-    --ring: 262 83% 65%;
+    --border: 240 15% 22%;
+    --input: 240 15% 22%;
+    --ring: 265 85% 65%;
 
-    --shadow-card: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
-    --shadow-button: 0 4px 15px -3px hsl(262 83% 65% / 0.3);
-    --shadow-success: 0 4px 15px -3px hsl(142 70% 50% / 0.3);
-    --shadow-glow: 0 0 30px hsl(262 83% 65% / 0.2);
+    --glass-bg: rgba(30, 30, 40, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -104,12 +109,37 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans antialiased;
-    font-family: 'Nunito', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
 @layer utilities {
+  /* Glass morphism */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-strong {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(30px) saturate(180%);
+    -webkit-backdrop-filter: blur(30px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+  }
+
+  .glass-dark {
+    background: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Gradients */
   .gradient-primary {
     background: var(--gradient-primary);
   }
@@ -129,47 +159,77 @@
   .gradient-hero {
     background: var(--gradient-hero);
   }
-  
-  .shadow-card {
-    box-shadow: var(--shadow-card);
+
+  /* Shadows */
+  .shadow-glass {
+    box-shadow: var(--glass-shadow);
   }
-  
-  .shadow-button {
-    box-shadow: var(--shadow-button);
-  }
-  
-  .shadow-success {
-    box-shadow: var(--shadow-success);
-  }
-  
+
   .shadow-glow {
     box-shadow: var(--shadow-glow);
   }
 
+  .shadow-soft {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-lift {
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Text gradient */
   .text-gradient {
     background: var(--gradient-primary);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
+
+  /* Icon glow effect */
+  .icon-glow {
+    position: relative;
+  }
+
+  .icon-glow::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    filter: blur(12px);
+    opacity: 0.4;
+    z-index: -1;
+  }
 }
 
-/* Custom scrollbar */
+/* Smooth transitions globally */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Custom scrollbar - minimal iOS style */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--muted));
-  border-radius: 3px;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.5);
-  border-radius: 3px;
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.7);
+  background: hsl(var(--muted-foreground) / 0.3);
+}
+
+/* Safe area padding for iOS */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
 }

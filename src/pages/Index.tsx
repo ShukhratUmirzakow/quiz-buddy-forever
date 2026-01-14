@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, BookOpen, Target, Zap, Plus } from 'lucide-react';
+import { Trophy, BookOpen, Target, Zap, Plus, User } from 'lucide-react';
 import { Quiz, UserStats } from '@/types/quiz';
 import { getAllQuizzes, deleteQuiz, getUserStats } from '@/lib/quizStorage';
 import { QuizCard } from '@/components/quiz/QuizCard';
@@ -60,62 +60,143 @@ const Index = () => {
   const accuracy = stats.totalQuestionsAnswered > 0 ? Math.round((stats.totalCorrectAnswers / stats.totalQuestionsAnswered) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-600 via-purple-600 to-violet-700">
-      <div className="px-5 pt-14 pb-8">
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8">
-          <h1 className="text-4xl font-black text-white mb-1">QuizMaster</h1>
-          <p className="text-white/70 font-medium">Your personal quiz companion</p>
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col">
+      {/* Header */}
+      <div className="px-6 pt-14 pb-6">
+        {/* Profile Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }} 
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 mb-8"
+        >
+          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+            <User className="w-6 h-6 text-white" strokeWidth={2.5} />
+          </div>
+          <div>
+            <p className="text-white/70 text-sm font-medium">Welcome back</p>
+            <h1 className="text-xl font-bold text-white">Shuxrat</h1>
+          </div>
         </motion.div>
+
+        {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-400 flex items-center justify-center"><Trophy className="w-5 h-5 text-amber-900" /></div>
-              <div><p className="text-white/60 text-xs font-medium">Total Score</p><p className="text-white text-xl font-bold">{stats.totalScore}</p></div>
-            </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-violet-400 flex items-center justify-center"><BookOpen className="w-5 h-5 text-violet-900" /></div>
-              <div><p className="text-white/60 text-xs font-medium">Quizzes</p><p className="text-white text-xl font-bold">{stats.totalQuizzesTaken}</p></div>
-            </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-400 flex items-center justify-center"><Target className="w-5 h-5 text-emerald-900" /></div>
-              <div><p className="text-white/60 text-xs font-medium">Correct</p><p className="text-white text-xl font-bold">{stats.totalCorrectAnswers}</p></div>
-            </div>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-cyan-400 flex items-center justify-center"><Zap className="w-5 h-5 text-cyan-900" /></div>
-              <div><p className="text-white/60 text-xs font-medium">Accuracy</p><p className="text-white text-xl font-bold">{accuracy}%</p></div>
-            </div>
-          </motion.div>
+          {[
+            { icon: Trophy, label: 'Total Score', value: stats.totalScore, color: 'amber', iconColor: 'text-amber-600' },
+            { icon: BookOpen, label: 'Quizzes', value: stats.totalQuizzesTaken, color: 'violet', iconColor: 'text-violet-600' },
+            { icon: Target, label: 'Correct', value: stats.totalCorrectAnswers, color: 'emerald', iconColor: 'text-emerald-600' },
+            { icon: Zap, label: 'Accuracy', value: `${accuracy}%`, color: 'cyan', iconColor: 'text-cyan-600' },
+          ].map((stat, index) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + index * 0.05 }}
+              className="glass-dark rounded-2xl p-4 relative overflow-hidden"
+            >
+              {/* Blurred icon background */}
+              <div className="absolute -right-2 -top-2 opacity-20">
+                <stat.icon className="w-16 h-16 text-white blur-[2px]" strokeWidth={1.5} />
+              </div>
+              <div className="relative flex items-center gap-3">
+                <div className={`w-11 h-11 rounded-xl bg-${stat.color}-400/90 flex items-center justify-center shadow-lg`}>
+                  <stat.icon className={`w-5 h-5 ${stat.iconColor}`} strokeWidth={2.5} />
+                </div>
+                <div>
+                  <p className="text-white/60 text-xs font-semibold tracking-wide">{stat.label}</p>
+                  <p className="text-white text-xl font-bold">{stat.value}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
-      <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex-1 bg-gray-50 rounded-t-[2.5rem] min-h-[50vh]">
-        <div className="px-5 py-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Your Quizzes {quizzes.length > 0 && <span className="ml-2 text-sm font-normal text-gray-400">({quizzes.length})</span>}</h2>
-            <Button onClick={() => setShowUpload(true)} className="h-11 px-5 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-semibold shadow-lg shadow-purple-500/30"><Plus className="w-5 h-5 mr-1.5" />Add Quiz</Button>
+
+      {/* Content Area */}
+      <motion.div 
+        initial={{ opacity: 0, y: 40 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        transition={{ delay: 0.3 }}
+        className="flex-1 bg-gray-50/95 backdrop-blur-xl rounded-t-[2rem] flex flex-col"
+      >
+        <div className="px-6 py-6 flex-1 flex flex-col">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-bold text-gray-900">
+              Your Quizzes
+              {quizzes.length > 0 && (
+                <span className="ml-2 text-sm font-semibold text-gray-400">({quizzes.length})</span>
+              )}
+            </h2>
+            <Button 
+              onClick={() => setShowUpload(true)} 
+              className="h-10 px-4 rounded-xl gradient-primary text-white font-semibold shadow-lg shadow-purple-500/25 border-0"
+            >
+              <Plus className="w-5 h-5 mr-1" strokeWidth={2.5} />
+              Add
+            </Button>
           </div>
+
           {loading ? (
-            <div className="flex items-center justify-center py-16"><div className="w-10 h-10 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" /></div>
+            <div className="flex-1 flex items-center justify-center">
+              <div className="w-10 h-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+            </div>
           ) : quizzes.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center"><BookOpen className="w-10 h-10 text-gray-300" /></div>
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
+              <div className="w-20 h-20 mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                <BookOpen className="w-10 h-10 text-gray-300" strokeWidth={1.5} />
+              </div>
               <h3 className="font-bold text-gray-800 text-lg mb-2">No quizzes yet</h3>
-              <p className="text-gray-400 mb-6">Upload your first quiz to get started!</p>
-              <Button onClick={() => setShowUpload(true)} className="h-12 px-6 rounded-xl bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold shadow-lg"><Plus className="w-5 h-5 mr-2" />Upload Quiz</Button>
+              <p className="text-gray-400 mb-6 text-sm">Upload your first quiz to get started!</p>
+              <Button 
+                onClick={() => setShowUpload(true)} 
+                className="h-12 px-6 rounded-xl gradient-primary text-white font-semibold shadow-lg"
+              >
+                <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
+                Upload Quiz
+              </Button>
             </div>
           ) : (
-            <div className="space-y-3"><AnimatePresence mode="popLayout">{quizzes.map((quiz, index) => (<QuizCard key={quiz.id} quiz={quiz} index={index} onPlay={() => handlePlayQuiz(quiz)} onDelete={() => setQuizToDelete(quiz)} />))}</AnimatePresence></div>
+            <div className="space-y-3 flex-1 pb-6">
+              <AnimatePresence mode="popLayout">
+                {quizzes.map((quiz, index) => (
+                  <QuizCard 
+                    key={quiz.id} 
+                    quiz={quiz} 
+                    index={index} 
+                    onPlay={() => handlePlayQuiz(quiz)} 
+                    onDelete={() => setQuizToDelete(quiz)} 
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
           )}
         </div>
       </motion.div>
-      <Dialog open={showUpload} onOpenChange={setShowUpload}><DialogContent className="sm:max-w-md rounded-3xl border-0"><DialogHeader><DialogTitle className="text-xl font-bold">Upload Quiz</DialogTitle></DialogHeader><FileUpload onQuizUploaded={handleQuizUploaded} /></DialogContent></Dialog>
-      {selectedQuiz && <QuizSettingsDialog quiz={selectedQuiz} open={showSettings} onOpenChange={setShowSettings} onStart={handleStartQuiz} />}
-      <DeleteConfirmDialog open={!!quizToDelete} onOpenChange={(open) => !open && setQuizToDelete(null)} quizName={quizToDelete?.name || ''} onConfirm={handleDeleteQuiz} />
+
+      {/* Dialogs */}
+      <Dialog open={showUpload} onOpenChange={setShowUpload}>
+        <DialogContent className="sm:max-w-md rounded-3xl border-0 shadow-xl">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold">Upload Quiz</DialogTitle>
+          </DialogHeader>
+          <FileUpload onQuizUploaded={handleQuizUploaded} />
+        </DialogContent>
+      </Dialog>
+
+      {selectedQuiz && (
+        <QuizSettingsDialog 
+          quiz={selectedQuiz} 
+          open={showSettings} 
+          onOpenChange={setShowSettings} 
+          onStart={handleStartQuiz} 
+        />
+      )}
+
+      <DeleteConfirmDialog 
+        open={!!quizToDelete} 
+        onOpenChange={(open) => !open && setQuizToDelete(null)} 
+        quizName={quizToDelete?.name || ''} 
+        onConfirm={handleDeleteQuiz} 
+      />
     </div>
   );
 };
