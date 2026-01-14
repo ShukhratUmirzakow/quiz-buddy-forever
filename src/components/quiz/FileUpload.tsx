@@ -78,7 +78,7 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-0">
       <input
         ref={fileInputRef}
         type="file"
