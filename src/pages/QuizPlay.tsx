@@ -1,16 +1,22 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, X, Pause, Play } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Quiz, QuizQuestion, QuizSettings, QuizAttempt } from '@/types/quiz';
 import { getQuiz, saveAttempt, updateQuizStats, updateUserStats } from '@/lib/quizStorage';
 import { prepareQuizQuestions } from '@/lib/quizParser';
-import { AnswerOption } from '@/components/quiz/AnswerOption';
-import { ProgressBar } from '@/components/quiz/ProgressBar';
-import { Timer } from '@/components/quiz/Timer';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const QuizPlay = () => {
   const { id } = useParams<{ id: string }>();
@@ -23,10 +29,29 @@ const QuizPlay = () => {
   const [showResult, setShowResult] = useState(false);
   const [answers, setAnswers] = useState<QuizAttempt['answers']>([]);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
+  const [showExitDialog, setShowExitDialog] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [seconds, setSeconds] = useState(0);
   
-  const timeRef = useRef(0);
   const hasTriggeredConfetti = useRef(false);
+
+  // Timer effect
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isTimerRunning && !isPaused) {
+      interval = setInterval(() => {
+        setSeconds(prev => prev + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, isPaused]);
+
+  const formatTime = (totalSeconds: number) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   useEffect(() => {
     async function loadQuiz() {
@@ -44,7 +69,6 @@ const QuizPlay = () => {
 
         setQuiz(loadedQuiz);
 
-        // Get settings from sessionStorage
         const settingsData = sessionStorage.getItem('quizSettings');
         let settings: QuizSettings = {
           shuffleQuestions: false,
@@ -60,7 +84,6 @@ const QuizPlay = () => {
           sessionStorage.removeItem('quizSettings');
         }
 
-        // Prepare questions with settings
         const range = settings.questionRange.enabled
           ? { start: settings.questionRange.start, end: settings.questionRange.end }
           : undefined;
@@ -85,36 +108,18 @@ const QuizPlay = () => {
 
   const currentQuestion = questions[currentIndex];
   const isLastQuestion = currentIndex === questions.length - 1;
+  const progressPercentage = ((currentIndex + 1) / questions.length) * 100;
 
   const triggerConfetti = useCallback(() => {
     if (hasTriggeredConfetti.current) return;
     hasTriggeredConfetti.current = true;
 
-    const duration = 700;
-    const end = Date.now() + duration;
-
-    const colors = ['#22c55e', '#10b981', '#34d399', '#6ee7b7'];
-
-    (function frame() {
-      confetti({
-        particleCount: 3,
-        angle: 60,
-        spread: 55,
-        origin: { x: 0 },
-        colors,
-      });
-      confetti({
-        particleCount: 3,
-        angle: 120,
-        spread: 55,
-        origin: { x: 1 },
-        colors,
-      });
-
-      if (Date.now() < end) {
-        requestAnimationFrame(frame);
-      }
-    })();
+    confetti({
+      particleCount: 80,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#22c55e', '#10b981', '#34d399'],
+    });
   }, []);
 
   const handleAnswerSelect = (label: string) => {
@@ -125,7 +130,6 @@ const QuizPlay = () => {
 
     const isCorrect = label === currentQuestion.correctAnswer;
 
-    // Record answer
     setAnswers(prev => [
       ...prev,
       {
@@ -137,63 +141,73 @@ const QuizPlay = () => {
       },
     ]);
 
-    // Trigger confetti for correct answer
     if (isCorrect) {
       hasTriggeredConfetti.current = false;
-      setTimeout(triggerConfetti, 200);
+      setTimeout(triggerConfetti, 150);
     }
   };
 
   const handleNext = async () => {
     if (isLastQuestion) {
-      // Finish quiz
       setIsTimerRunning(false);
 
       const correctCount = answers.filter(a => a.isCorrect).length;
       const score = Math.round((correctCount / questions.length) * 100);
 
-      // Create attempt record
       const attempt: QuizAttempt = {
         id: crypto.randomUUID(),
         quizId: quiz!.id,
         quizName: quiz!.name,
         score,
         totalQuestions: questions.length,
-        timeSpent: timeRef.current,
+        timeSpent: seconds,
         completedAt: Date.now(),
         answers,
       };
 
-      // Save to database
       await saveAttempt(attempt);
       await updateQuizStats(quiz!.id, score);
       await updateUserStats(correctCount, questions.length);
 
-      // Navigate to results
       sessionStorage.setItem('quizAttempt', JSON.stringify(attempt));
       navigate(`/results/${attempt.id}`);
     } else {
-      // Next question
       setCurrentIndex(prev => prev + 1);
       setSelectedAnswer(null);
       setShowResult(false);
     }
   };
 
-  const handleBack = () => {
-    if (currentIndex === 0) {
-      navigate('/');
-    }
+  const handlePauseToggle = () => {
+    setIsPaused(!isPaused);
   };
 
-  const handleTimeUpdate = (seconds: number) => {
-    timeRef.current = seconds;
+  const handleExit = () => {
+    setShowExitDialog(true);
+    setIsPaused(true);
+  };
+
+  const confirmExit = () => {
+    navigate('/');
+  };
+
+  const getOptionState = (label: string) => {
+    if (!showResult) {
+      return 'default';
+    }
+    if (label === currentQuestion.correctAnswer) {
+      return 'correct';
+    }
+    if (label === selectedAnswer && label !== currentQuestion.correctAnswer) {
+      return 'wrong';
+    }
+    return 'disabled';
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen gradient-hero flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-violet-600 via-purple-600 to-violet-700 flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -203,68 +217,162 @@ const QuizPlay = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-hero">
-      <div className="container py-6 px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBack}
-            className="text-primary-foreground hover:bg-primary-foreground/10"
+    <div className="min-h-screen bg-gradient-to-b from-violet-600 via-purple-600 to-violet-700 flex flex-col">
+      {/* Pause Overlay */}
+      <AnimatePresence>
+        {isPaused && !showExitDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-center justify-center"
+            onClick={handlePauseToggle}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="bg-white rounded-3xl p-8 text-center shadow-2xl"
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-20 h-20 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4">
+                <Pause className="w-10 h-10 text-violet-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Paused</h2>
+              <p className="text-gray-500 mb-6">Take your time</p>
+              <Button
+                onClick={handlePauseToggle}
+                className="w-full h-14 rounded-2xl bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white font-bold text-lg shadow-lg shadow-green-500/30"
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Resume
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Header */}
+      <div className="px-5 pt-12 pb-4">
+        <div className="flex items-center justify-between mb-6">
+          {/* Back/Exit Button */}
+          <button
+            onClick={handleExit}
+            className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
-          </Button>
+          </button>
 
+          {/* Question Counter */}
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-primary-foreground font-bold"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-white font-bold text-lg"
           >
             {String(currentIndex + 1).padStart(2, '0')} of {String(questions.length).padStart(2, '0')}
           </motion.div>
 
-          <Timer isRunning={isTimerRunning} onTimeUpdate={handleTimeUpdate} />
+          {/* Timer */}
+          <button
+            onClick={handlePauseToggle}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-amber-400 text-amber-900 font-bold shadow-lg shadow-amber-400/30"
+          >
+            <div className="w-5 h-5 rounded-full bg-amber-500 flex items-center justify-center">
+              <div className="w-2 h-2 rounded-full bg-amber-200" />
+            </div>
+            <span className="tabular-nums">{formatTime(seconds)}</span>
+          </button>
         </div>
 
         {/* Progress Bar */}
-        <div className="mb-6">
-          <ProgressBar current={currentIndex + 1} total={questions.length} />
+        <div className="h-2 bg-white/20 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${progressPercentage}%` }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="h-full bg-gradient-to-r from-emerald-400 to-green-400 rounded-full"
+          />
         </div>
+      </div>
 
-        {/* Question Card */}
+      {/* Question Card */}
+      <div className="flex-1 px-5 pb-6 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: 60, scale: 0.95 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -60, scale: 0.95 }}
             transition={{ duration: 0.3 }}
+            className="flex-1 flex flex-col"
           >
-            <Card className="p-6 shadow-card border-0 mb-6">
-              <p className="text-xs text-muted-foreground uppercase tracking-wider mb-2">
+            {/* White Card */}
+            <div className="bg-white rounded-3xl p-6 shadow-xl shadow-purple-900/20 mb-6">
+              <p className="text-sm text-gray-400 font-medium mb-3">
                 {quiz.name}
               </p>
-              <h2 className="text-lg font-bold text-foreground leading-relaxed">
+              <h2 className="text-xl font-bold text-gray-900 leading-relaxed">
                 {currentQuestion.question}
               </h2>
-            </Card>
+            </div>
 
             {/* Answer Options */}
-            <div className="space-y-3 mb-6">
-              {currentQuestion.options.map((option) => (
-                <AnswerOption
-                  key={option.label}
-                  label={option.label}
-                  text={option.text}
-                  selected={selectedAnswer === option.label}
-                  isCorrect={option.label === currentQuestion.correctAnswer}
-                  showResult={showResult}
-                  disabled={showResult}
-                  onClick={() => handleAnswerSelect(option.label)}
-                />
-              ))}
+            <div className="space-y-3 flex-1">
+              {currentQuestion.options.map((option) => {
+                const state = getOptionState(option.label);
+                
+                return (
+                  <motion.button
+                    key={option.label}
+                    onClick={() => handleAnswerSelect(option.label)}
+                    disabled={showResult}
+                    whileTap={!showResult ? { scale: 0.98 } : undefined}
+                    className={`
+                      w-full p-4 rounded-2xl text-left transition-all duration-200
+                      flex items-center justify-between
+                      ${state === 'default' ? 'bg-white shadow-md hover:shadow-lg' : ''}
+                      ${state === 'correct' ? 'bg-emerald-50 shadow-md ring-2 ring-emerald-400' : ''}
+                      ${state === 'wrong' ? 'bg-red-50 shadow-md ring-2 ring-red-400' : ''}
+                      ${state === 'disabled' ? 'bg-white/80 shadow-sm' : ''}
+                      ${!showResult ? 'cursor-pointer active:scale-[0.98]' : 'cursor-default'}
+                    `}
+                  >
+                    <span className={`
+                      font-semibold text-base leading-snug pr-4
+                      ${state === 'correct' ? 'text-emerald-700' : ''}
+                      ${state === 'wrong' ? 'text-red-700' : ''}
+                      ${state === 'default' || state === 'disabled' ? 'text-gray-800' : ''}
+                    `}>
+                      {option.text}
+                    </span>
+
+                    {/* Result Icon */}
+                    {showResult && state === 'correct' && (
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0"
+                      >
+                        <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </motion.div>
+                    )}
+                    {showResult && state === 'wrong' && (
+                      <motion.div
+                        initial={{ scale: 0, rotate: 180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                        className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0"
+                      >
+                        <X className="w-5 h-5 text-white" strokeWidth={3} />
+                      </motion.div>
+                    )}
+                  </motion.button>
+                );
+              })}
             </div>
           </motion.div>
         </AnimatePresence>
@@ -273,21 +381,48 @@ const QuizPlay = () => {
         <AnimatePresence>
           {showResult && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              exit={{ opacity: 0, y: 30 }}
+              transition={{ duration: 0.3 }}
+              className="mt-6"
             >
               <Button
                 onClick={handleNext}
-                className="w-full h-14 text-lg font-bold gradient-success text-success-foreground shadow-success hover:opacity-90"
+                className="w-full h-14 rounded-2xl bg-gradient-to-r from-emerald-400 to-green-500 hover:from-emerald-500 hover:to-green-600 text-white font-bold text-lg shadow-lg shadow-green-500/30 border-0"
               >
                 {isLastQuestion ? 'View Results' : 'Next'}
-                <ChevronRight className="w-5 h-5 ml-2" />
               </Button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
+
+      {/* Exit Confirmation Dialog */}
+      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+        <AlertDialogContent className="rounded-3xl border-0 shadow-2xl">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">Testni bekor qilmoqchimisiz?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Natijalaringiz saqlanmaydi. Ishonchingiz komilmi?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="gap-3">
+            <AlertDialogCancel 
+              onClick={() => setIsPaused(false)}
+              className="rounded-xl h-12"
+            >
+              Davom etish
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmExit}
+              className="rounded-xl h-12 bg-red-500 hover:bg-red-600"
+            >
+              Chiqish
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
