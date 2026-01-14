@@ -206,7 +206,7 @@ const QuizPlay = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -215,7 +215,7 @@ const QuizPlay = () => {
   if (!quiz || !currentQuestion) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex flex-col">
       {/* Pause Overlay */}
       <AnimatePresence>
         {isPaused && !showExitDialog && (
@@ -223,24 +223,26 @@ const QuizPlay = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 backdrop-blur-md z-40 flex items-center justify-center"
+            transition={{ duration: 0.25 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 flex items-center justify-center"
             onClick={handlePauseToggle}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="glass-strong rounded-3xl p-8 text-center shadow-2xl mx-6"
+              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="glass-strong rounded-3xl p-8 text-center shadow-xl mx-5"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-20 h-20 rounded-full bg-violet-100 flex items-center justify-center mx-auto mb-4">
-                <Pause className="w-10 h-10 text-violet-600" strokeWidth={2.5} />
+              <div className="w-20 h-20 rounded-full bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center mx-auto mb-4 shadow-edge-violet">
+                <Pause className="w-10 h-10 text-violet-600 dark:text-violet-400" strokeWidth={2.5} />
               </div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">Paused</h2>
-              <p className="text-gray-500 mb-6">Take your time</p>
+              <h2 className="text-2xl font-extrabold text-foreground mb-2">Paused</h2>
+              <p className="text-muted-foreground font-semibold mb-6">Take your time</p>
               <Button
                 onClick={handlePauseToggle}
-                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-lg"
+                className="w-full h-14 rounded-2xl gradient-success text-white font-extrabold text-lg shadow-edge-emerald transition-transform active:scale-[0.98]"
               >
                 <Play className="w-5 h-5 mr-2" strokeWidth={2.5} />
                 Resume
@@ -251,11 +253,11 @@ const QuizPlay = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="px-6 pt-14 pb-4">
+      <div className="px-5 pt-14 pb-4">
         <div className="flex items-center justify-between mb-5">
           <button
             onClick={handleExit}
-            className="w-11 h-11 rounded-full glass-dark flex items-center justify-center text-white"
+            className="w-11 h-11 rounded-full glass-dark flex items-center justify-center text-white transition-transform active:scale-95"
           >
             <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
           </button>
@@ -264,14 +266,15 @@ const QuizPlay = () => {
             key={currentIndex}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-white font-bold text-lg"
+            transition={{ duration: 0.2 }}
+            className="text-white font-extrabold text-lg"
           >
             {String(currentIndex + 1).padStart(2, '0')} / {String(questions.length).padStart(2, '0')}
           </motion.div>
 
           <button
             onClick={handlePauseToggle}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-amber-400 text-amber-900 font-bold shadow-lg"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-amber-400 text-amber-900 font-bold shadow-edge-amber transition-transform active:scale-95"
           >
             <Clock className="w-4 h-4" strokeWidth={2.5} />
             <span className="tabular-nums text-sm">{formatTime(seconds)}</span>
@@ -283,29 +286,29 @@ const QuizPlay = () => {
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="h-full gradient-success rounded-full"
           />
         </div>
       </div>
 
       {/* Question Card */}
-      <div className="flex-1 px-6 pb-8 flex flex-col">
+      <div className="flex-1 px-5 pb-8 flex flex-col">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, x: 40 }}
+            initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="flex-1 flex flex-col"
           >
             {/* White Card */}
             <div className="glass-strong rounded-3xl p-6 shadow-xl mb-5">
-              <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-3">
+              <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide mb-3">
                 {quiz.name}
               </p>
-              <h2 className="text-lg font-bold text-gray-900 leading-relaxed">
+              <h2 className="text-lg font-bold text-foreground leading-relaxed">
                 {currentQuestion.question}
               </h2>
             </div>
@@ -324,18 +327,18 @@ const QuizPlay = () => {
                     className={`
                       w-full p-4 rounded-2xl text-left transition-all duration-200
                       flex items-center justify-between
-                      ${state === 'default' ? 'glass-strong shadow-soft hover:shadow-lg' : ''}
-                      ${state === 'correct' ? 'bg-emerald-50 ring-2 ring-emerald-400 shadow-lg shadow-emerald-500/20' : ''}
-                      ${state === 'wrong' ? 'bg-red-50 ring-2 ring-red-400 shadow-lg shadow-red-500/20' : ''}
-                      ${state === 'disabled' ? 'bg-white/60 opacity-60' : ''}
+                      ${state === 'default' ? 'glass-strong hover:shadow-lg' : ''}
+                      ${state === 'correct' ? 'bg-emerald-50 dark:bg-emerald-950/50 ring-2 ring-emerald-400 shadow-edge-emerald' : ''}
+                      ${state === 'wrong' ? 'bg-red-50 dark:bg-red-950/50 ring-2 ring-red-400 shadow-edge-red' : ''}
+                      ${state === 'disabled' ? 'glass-strong opacity-60' : ''}
                       ${!showResult ? 'cursor-pointer' : 'cursor-default'}
                     `}
                   >
                     <span className={`
                       font-semibold text-sm leading-snug pr-4
-                      ${state === 'correct' ? 'text-emerald-700' : ''}
-                      ${state === 'wrong' ? 'text-red-700' : ''}
-                      ${state === 'default' || state === 'disabled' ? 'text-gray-800' : ''}
+                      ${state === 'correct' ? 'text-emerald-700 dark:text-emerald-300' : ''}
+                      ${state === 'wrong' ? 'text-red-700 dark:text-red-300' : ''}
+                      ${state === 'default' || state === 'disabled' ? 'text-foreground' : ''}
                     `}>
                       {option.text}
                     </span>
@@ -377,12 +380,12 @@ const QuizPlay = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.2 }}
+                transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
                 className="mt-5"
               >
                 <Button
                   onClick={handleNext}
-                  className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-lg shadow-green-500/30 border-0"
+                  className="w-full h-14 rounded-2xl gradient-success text-white font-extrabold text-lg shadow-edge-emerald border-0 transition-transform active:scale-[0.98]"
                 >
                   {isLastQuestion ? 'View Results' : 'Next'}
                 </Button>
@@ -394,23 +397,23 @@ const QuizPlay = () => {
 
       {/* Exit Dialog */}
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent className="rounded-3xl border-0 shadow-2xl mx-6">
+        <AlertDialogContent className="rounded-3xl border-0 shadow-xl mx-5">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">Exit Quiz?</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl font-extrabold">Exit Quiz?</AlertDialogTitle>
+            <AlertDialogDescription className="font-semibold">
               Your progress will not be saved. Are you sure?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
             <AlertDialogCancel 
               onClick={() => setIsPaused(false)}
-              className="rounded-xl h-12 font-semibold"
+              className="rounded-xl h-12 font-bold"
             >
               Continue
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmExit}
-              className="rounded-xl h-12 bg-red-500 hover:bg-red-600 font-semibold"
+              className="rounded-xl h-12 bg-red-500 hover:bg-red-600 font-bold shadow-edge-red"
             >
               Exit
             </AlertDialogAction>

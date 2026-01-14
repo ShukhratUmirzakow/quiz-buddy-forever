@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
   RefreshCcw, 
@@ -59,7 +59,7 @@ const QuizResults = () => {
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
       </div>
     );
@@ -118,21 +118,22 @@ const QuizResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600">
+    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
       {/* Header */}
-      <div className="px-6 pt-14 pb-6 text-center">
+      <div className="px-5 pt-14 pb-6 text-center">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-2xl font-bold text-white mb-1"
+          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="text-2xl font-extrabold text-white mb-1"
         >
           Quiz Complete!
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="text-white/70 font-medium text-sm"
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="text-white/70 font-semibold text-sm"
         >
           {attempt.quizName}
         </motion.p>
@@ -142,57 +143,78 @@ const QuizResults = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="bg-gray-50/95 backdrop-blur-xl rounded-t-[2rem] min-h-[75vh]"
+        transition={{ delay: 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+        className="bg-content rounded-t-[2rem] min-h-[75vh] shadow-xl"
       >
-        <div className="px-6 py-6">
+        <div className="px-5 py-6">
           {/* Score */}
           <div className="text-center mb-6">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              transition={{ type: 'spring', delay: 0.2 }}
+              transition={{ type: 'spring', delay: 0.2, stiffness: 200 }}
               className="text-6xl font-black text-gradient mb-1"
             >
               {attempt.score}%
             </motion.div>
-            <p className="text-gray-400 font-semibold text-sm">
+            <p className="text-muted-foreground font-bold text-sm">
               Score: {correctCount} / {attempt.totalQuestions} correct
             </p>
           </div>
 
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mb-6">
-            {[
-              { icon: CheckCircle2, value: correctCount, label: 'Correct', color: 'emerald' },
-              { icon: XCircle, value: wrongCount, label: 'Wrong', color: 'red' },
-              { icon: Clock, value: formatTime(attempt.timeSpent), label: 'Time', color: 'amber' },
-            ].map((stat, index) => (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 + index * 0.05 }}
-                className={`bg-${stat.color}-50 rounded-2xl p-4 text-center relative overflow-hidden`}
-              >
-                <div className="absolute -right-1 -top-1 opacity-15">
-                  <stat.icon className={`w-12 h-12 text-${stat.color}-500 blur-[1px]`} strokeWidth={1.5} />
-                </div>
-                <stat.icon className={`w-6 h-6 text-${stat.color}-500 mx-auto mb-2`} strokeWidth={2.5} />
-                <p className={`text-xl font-bold text-${stat.color}-600`}>{stat.value}</p>
-                <p className={`text-xs text-${stat.color}-600/70 font-semibold`}>{stat.label}</p>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-emerald"
+            >
+              <div className="absolute -right-1 -top-1 opacity-15">
+                <CheckCircle2 className="w-12 h-12 text-emerald-500 blur-sm" strokeWidth={1.5} />
+              </div>
+              <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto mb-2" strokeWidth={2.5} />
+              <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{correctCount}</p>
+              <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 font-bold">Correct</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.4 }}
+              className="bg-red-50 dark:bg-red-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-red"
+            >
+              <div className="absolute -right-1 -top-1 opacity-15">
+                <XCircle className="w-12 h-12 text-red-500 blur-sm" strokeWidth={1.5} />
+              </div>
+              <XCircle className="w-6 h-6 text-red-500 mx-auto mb-2" strokeWidth={2.5} />
+              <p className="text-xl font-extrabold text-red-600 dark:text-red-400">{wrongCount}</p>
+              <p className="text-xs text-red-600/70 dark:text-red-400/70 font-bold">Wrong</p>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.4 }}
+              className="bg-amber-50 dark:bg-amber-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-amber"
+            >
+              <div className="absolute -right-1 -top-1 opacity-15">
+                <Clock className="w-12 h-12 text-amber-500 blur-sm" strokeWidth={1.5} />
+              </div>
+              <Clock className="w-6 h-6 text-amber-500 mx-auto mb-2" strokeWidth={2.5} />
+              <p className="text-xl font-extrabold text-amber-600 dark:text-amber-400">{formatTime(attempt.timeSpent)}</p>
+              <p className="text-xs text-amber-600/70 dark:text-amber-400/70 font-bold">Time</p>
+            </motion.div>
           </div>
 
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            className="bg-white rounded-3xl p-5 mb-6 shadow-soft"
+            transition={{ delay: 0.5, duration: 0.4 }}
+            className="bg-card rounded-3xl p-5 mb-6 shadow-soft"
           >
-            <p className="text-xs text-gray-400 text-center mb-3 font-semibold uppercase tracking-wide">Achievement</p>
+            <p className="text-xs text-muted-foreground text-center mb-3 font-bold uppercase tracking-wide">Achievement</p>
             <Badge badge={badge} percentage={attempt.score} />
           </motion.div>
 
@@ -200,15 +222,15 @@ const QuizResults = () => {
           <motion.div
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
             className="grid grid-cols-2 gap-3 mb-5"
           >
             <Button
               onClick={() => setShowDetails(!showDetails)}
-              className="h-12 rounded-2xl bg-violet-100 hover:bg-violet-200 text-violet-700 font-bold shadow-none border-0 relative overflow-hidden"
+              className="h-12 rounded-2xl bg-violet-100 dark:bg-violet-900/50 hover:bg-violet-200 dark:hover:bg-violet-900/70 text-violet-700 dark:text-violet-300 font-bold shadow-edge-violet border-0 relative overflow-hidden transition-transform active:scale-95"
             >
               <div className="absolute -right-1 -top-1 opacity-20">
-                <Eye className="w-10 h-10 text-violet-500 blur-[1px]" strokeWidth={1.5} />
+                <Eye className="w-10 h-10 text-violet-500 blur-sm" strokeWidth={1.5} />
               </div>
               {showDetails ? <EyeOff className="w-5 h-5 mr-2" strokeWidth={2.5} /> : <Eye className="w-5 h-5 mr-2" strokeWidth={2.5} />}
               {showDetails ? 'Hide' : 'Answers'}
@@ -217,10 +239,10 @@ const QuizResults = () => {
             <Button
               onClick={handleRetryWrong}
               disabled={wrongCount === 0}
-              className="h-12 rounded-2xl bg-amber-100 hover:bg-amber-200 text-amber-700 font-bold shadow-none border-0 disabled:opacity-50 relative overflow-hidden"
+              className="h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/50 hover:bg-amber-200 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 font-bold shadow-edge-amber border-0 disabled:opacity-50 relative overflow-hidden transition-transform active:scale-95"
             >
               <div className="absolute -right-1 -top-1 opacity-20">
-                <Target className="w-10 h-10 text-amber-500 blur-[1px]" strokeWidth={1.5} />
+                <Target className="w-10 h-10 text-amber-500 blur-sm" strokeWidth={1.5} />
               </div>
               <Target className="w-5 h-5 mr-2" strokeWidth={2.5} />
               Retry Wrong
@@ -228,10 +250,10 @@ const QuizResults = () => {
             
             <Button
               onClick={handleRestartQuiz}
-              className="h-12 rounded-2xl bg-cyan-100 hover:bg-cyan-200 text-cyan-700 font-bold shadow-none border-0 relative overflow-hidden"
+              className="h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 hover:bg-cyan-200 dark:hover:bg-cyan-900/70 text-cyan-700 dark:text-cyan-300 font-bold shadow-edge-cyan border-0 relative overflow-hidden transition-transform active:scale-95"
             >
               <div className="absolute -right-1 -top-1 opacity-20">
-                <RefreshCcw className="w-10 h-10 text-cyan-500 blur-[1px]" strokeWidth={1.5} />
+                <RefreshCcw className="w-10 h-10 text-cyan-500 blur-sm" strokeWidth={1.5} />
               </div>
               <RefreshCcw className="w-5 h-5 mr-2" strokeWidth={2.5} />
               Restart
@@ -239,10 +261,10 @@ const QuizResults = () => {
             
             <Button
               onClick={() => navigate('/')}
-              className="h-12 rounded-2xl bg-emerald-100 hover:bg-emerald-200 text-emerald-700 font-bold shadow-none border-0 relative overflow-hidden"
+              className="h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 font-bold shadow-edge-emerald border-0 relative overflow-hidden transition-transform active:scale-95"
             >
               <div className="absolute -right-1 -top-1 opacity-20">
-                <Home className="w-10 h-10 text-emerald-500 blur-[1px]" strokeWidth={1.5} />
+                <Home className="w-10 h-10 text-emerald-500 blur-sm" strokeWidth={1.5} />
               </div>
               <Home className="w-5 h-5 mr-2" strokeWidth={2.5} />
               Home
@@ -250,68 +272,74 @@ const QuizResults = () => {
           </motion.div>
 
           {/* Answers Table */}
-          {showDetails && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              className="bg-white rounded-2xl overflow-hidden shadow-soft"
-            >
-              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="font-bold text-gray-900">Answer Review</h3>
-                <button
-                  onClick={() => setShowWrongOnly(!showWrongOnly)}
-                  className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-colors ${
-                    showWrongOnly ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {showWrongOnly ? "All" : "Wrong Only"}
-                </button>
-              </div>
-              
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-gray-100">
-                      <TableHead className="w-12 font-bold text-xs">#</TableHead>
-                      <TableHead className="font-bold text-xs">Question</TableHead>
-                      <TableHead className="w-16 font-bold text-xs">Your</TableHead>
-                      <TableHead className="w-16 font-bold text-xs">Correct</TableHead>
-                      <TableHead className="w-12 text-right font-bold text-xs">Result</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {displayedAnswers.map((answer, idx) => (
-                      <TableRow key={idx} className="border-gray-100">
-                        <TableCell className="font-bold text-gray-600 text-sm">
-                          {answer.questionIndex + 1}
-                        </TableCell>
-                        <TableCell className="max-w-[120px] truncate text-gray-700 text-sm">
-                          {answer.questionText}
-                        </TableCell>
-                        <TableCell className="font-mono font-bold text-gray-600 text-sm">
-                          {answer.selectedAnswer}
-                        </TableCell>
-                        <TableCell className="font-mono font-bold text-emerald-600 text-sm">
-                          {answer.correctAnswer}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {answer.isCorrect ? (
-                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-600" strokeWidth={2.5} />
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100">
-                              <XCircle className="w-4 h-4 text-red-600" strokeWidth={2.5} />
-                            </span>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </motion.div>
-          )}
+          <AnimatePresence>
+            {showDetails && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                className="overflow-hidden"
+              >
+                <div className="bg-card rounded-2xl shadow-soft">
+                  <div className="p-4 border-b border-border flex items-center justify-between">
+                    <h3 className="font-extrabold text-foreground">Answer Review</h3>
+                    <button
+                      onClick={() => setShowWrongOnly(!showWrongOnly)}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
+                        showWrongOnly ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400' : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      {showWrongOnly ? "All" : "Wrong Only"}
+                    </button>
+                  </div>
+                  
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-border">
+                          <TableHead className="w-12 font-bold text-xs">#</TableHead>
+                          <TableHead className="font-bold text-xs">Question</TableHead>
+                          <TableHead className="w-16 font-bold text-xs">Your</TableHead>
+                          <TableHead className="w-16 font-bold text-xs">Correct</TableHead>
+                          <TableHead className="w-12 text-right font-bold text-xs">Result</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {displayedAnswers.map((answer, idx) => (
+                          <TableRow key={idx} className="border-border">
+                            <TableCell className="font-bold text-muted-foreground text-sm">
+                              {answer.questionIndex + 1}
+                            </TableCell>
+                            <TableCell className="max-w-[120px] truncate text-foreground text-sm">
+                              {answer.questionText}
+                            </TableCell>
+                            <TableCell className="font-mono font-bold text-muted-foreground text-sm">
+                              {answer.selectedAnswer}
+                            </TableCell>
+                            <TableCell className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                              {answer.correctAnswer}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              {answer.isCorrect ? (
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/50">
+                                  <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" strokeWidth={2.5} />
+                                </span>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.div>
     </div>

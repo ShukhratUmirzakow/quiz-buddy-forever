@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=SF+Pro+Rounded:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
 @layer base {
   :root {
@@ -43,9 +43,9 @@
     --radius: 1rem;
 
     /* iOS Glass Effects */
-    --glass-bg: rgba(255, 255, 255, 0.75);
-    --glass-border: rgba(255, 255, 255, 0.3);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
     
     /* Gradients */
     --gradient-primary: linear-gradient(145deg, hsl(265, 90%, 65%) 0%, hsl(280, 85%, 55%) 100%);
@@ -55,11 +55,22 @@
     --gradient-hero: linear-gradient(165deg, hsl(265, 85%, 58%) 0%, hsl(285, 80%, 50%) 50%, hsl(265, 75%, 45%) 100%);
     
     /* Shadows */
-    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+    --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.08);
-    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.1);
     --shadow-glow: 0 0 40px hsl(265 90% 60% / 0.25);
+    
+    /* Colored edge shadows */
+    --shadow-violet: 0 4px 20px -4px hsl(265 90% 60% / 0.35);
+    --shadow-emerald: 0 4px 20px -4px hsl(152 75% 50% / 0.35);
+    --shadow-amber: 0 4px 20px -4px hsl(38 95% 55% / 0.35);
+    --shadow-cyan: 0 4px 20px -4px hsl(185 80% 50% / 0.35);
+    --shadow-red: 0 4px 20px -4px hsl(0 85% 60% / 0.35);
+    
+    /* Content background for cards */
+    --content-bg: 240 10% 97%;
   }
 
   .dark {
@@ -69,7 +80,7 @@
     --card: 240 12% 12%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 12% 12%;
+    --popover: 240 12% 14%;
     --popover-foreground: 0 0% 98%;
 
     --primary: 265 85% 65%;
@@ -97,9 +108,23 @@
     --input: 240 15% 22%;
     --ring: 265 85% 65%;
 
-    --glass-bg: rgba(30, 30, 40, 0.8);
-    --glass-border: rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --glass-bg: rgba(30, 30, 45, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    
+    --shadow-xs: 0 1px 3px rgba(0, 0, 0, 0.15);
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.35);
+    
+    --shadow-violet: 0 4px 20px -4px hsl(265 85% 65% / 0.4);
+    --shadow-emerald: 0 4px 20px -4px hsl(152 70% 50% / 0.4);
+    --shadow-amber: 0 4px 20px -4px hsl(38 92% 55% / 0.4);
+    --shadow-cyan: 0 4px 20px -4px hsl(185 80% 55% / 0.4);
+    --shadow-red: 0 4px 20px -4px hsl(0 75% 55% / 0.4);
+    
+    --content-bg: 240 12% 10%;
   }
 }
 
@@ -110,7 +135,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'SF Pro Rounded', 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -120,23 +145,32 @@
   /* Glass morphism */
   .glass {
     background: var(--glass-bg);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
     border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
   }
 
   .glass-strong {
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(30px) saturate(180%);
-    -webkit-backdrop-filter: blur(30px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+  }
+  
+  .dark .glass-strong {
+    background: rgba(30, 30, 45, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   }
 
   .glass-dark {
-    background: rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
   /* Gradients */
@@ -176,6 +210,26 @@
   .shadow-lift {
     box-shadow: var(--shadow-lg);
   }
+  
+  .shadow-edge-violet {
+    box-shadow: var(--shadow-violet);
+  }
+  
+  .shadow-edge-emerald {
+    box-shadow: var(--shadow-emerald);
+  }
+  
+  .shadow-edge-amber {
+    box-shadow: var(--shadow-amber);
+  }
+  
+  .shadow-edge-cyan {
+    box-shadow: var(--shadow-cyan);
+  }
+  
+  .shadow-edge-red {
+    box-shadow: var(--shadow-red);
+  }
 
   /* Text gradient */
   .text-gradient {
@@ -184,23 +238,14 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-
-  /* Icon glow effect */
-  .icon-glow {
-    position: relative;
-  }
-
-  .icon-glow::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    filter: blur(12px);
-    opacity: 0.4;
-    z-index: -1;
+  
+  /* Content background */
+  .bg-content {
+    background: hsl(var(--content-bg));
   }
 }
 
-/* Smooth transitions globally */
+/* Smooth transitions globally - faster for snappy feel */
 * {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
