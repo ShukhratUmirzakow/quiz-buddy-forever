@@ -62,9 +62,9 @@ export function QuizSettingsDialog({ quiz, open, onOpenChange, onStart }: QuizSe
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-extrabold">Quiz Settings</DialogTitle>
+          <DialogTitle className="text-xl font-extrabold text-center">Quiz Settings</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-3 py-2">
