@@ -1,7 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, X, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Upload, FileText, X, Loader2, File } from 'lucide-react';
 import { parseQuizFile } from '@/lib/quizParser';
 import { saveQuiz } from '@/lib/quizStorage';
 import { Quiz } from '@/types/quiz';
@@ -78,13 +77,6 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
     }
   };
 
-  const clearSelection = () => {
-    setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
     <div className="w-full">
       <input
@@ -102,12 +94,11 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
         onDrop={handleDrop}
         animate={{
           scale: isDragging ? 1.02 : 1,
-          borderColor: isDragging ? 'hsl(var(--primary))' : 'hsl(var(--border))',
         }}
         className={`
-          relative rounded-2xl border-2 border-dashed p-8
-          transition-colors duration-200 cursor-pointer
-          ${isDragging ? 'bg-primary/5' : 'bg-muted/30 hover:bg-muted/50'}
+          relative rounded-2xl border-2 border-dashed p-8 cursor-pointer
+          transition-all duration-200
+          ${isDragging ? 'border-violet-500 bg-violet-50' : 'border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-violet-50/50'}
         `}
         onClick={() => !isProcessing && fileInputRef.current?.click()}
       >
@@ -120,37 +111,15 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-4"
             >
-              <Loader2 className="w-12 h-12 text-primary animate-spin" />
+              <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-violet-600 animate-spin" />
+              </div>
               <div className="text-center">
-                <p className="font-semibold text-foreground">Processing quiz...</p>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="font-semibold text-gray-900">Processing quiz...</p>
+                <p className="text-sm text-gray-400 mt-1">
                   {selectedFile?.name}
                 </p>
               </div>
-            </motion.div>
-          ) : selectedFile ? (
-            <motion.div
-              key="selected"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center gap-4"
-            >
-              <div className="relative">
-                <FileText className="w-12 h-12 text-primary" />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-destructive text-destructive-foreground"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearSelection();
-                  }}
-                >
-                  <X className="w-3 h-3" />
-                </Button>
-              </div>
-              <p className="font-medium text-foreground">{selectedFile.name}</p>
             </motion.div>
           ) : (
             <motion.div
@@ -160,16 +129,21 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="p-4 rounded-full bg-primary/10">
-                <Upload className="w-8 h-8 text-primary" />
+              <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
+                <Upload className="w-8 h-8 text-violet-600" />
               </div>
               <div className="text-center">
-                <p className="font-semibold text-foreground">
+                <p className="font-semibold text-gray-900">
                   Drop your quiz file here
                 </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  or click to browse • .txt, .docx, .pdf
+                <p className="text-sm text-gray-400 mt-1">
+                  or tap to browse
                 </p>
+                <div className="flex items-center justify-center gap-2 mt-3">
+                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.txt</span>
+                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.docx</span>
+                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.pdf</span>
+                </div>
               </div>
             </motion.div>
           )}
