@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Trophy, BookOpen, Target, Zap, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Quiz, UserStats } from '@/types/quiz';
 import { getAllQuizzes, deleteQuiz, getUserStats } from '@/lib/quizStorage';
 import { QuizCard } from '@/components/quiz/QuizCard';
@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { GlowIcon } from '@/components/GlowIcon';
+import { StatCard } from '@/components/StatCard';
+import { EmojiIcon } from '@/components/EmojiIcon';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -78,35 +79,17 @@ const Index = () => {
         >
           <h1 className="text-3xl font-bold text-white mb-1">
             Hello, <br />
-            <span className="text-gradient">Shuxrat</span> <span className="emoji">👋</span>
+            <span className="text-white">Shuxrat</span> <EmojiIcon type="wave" size="lg" className="ml-1" />
           </h1>
           <p className="text-white/50 text-sm font-medium">Ready to test your knowledge?</p>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          {[
-            { icon: Trophy, label: 'Total Score', value: stats.totalScore, color: 'amber' as const },
-            { icon: BookOpen, label: 'Quizzes', value: stats.totalQuizzesTaken, color: 'violet' as const },
-            { icon: Target, label: 'Correct', value: stats.totalCorrectAnswers, color: 'emerald' as const },
-            { icon: Zap, label: 'Accuracy', value: `${accuracy}%`, color: 'cyan' as const },
-          ].map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20, scale: 0.95 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.1 + index * 0.08, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className={`glass-card rounded-2xl p-4 shadow-glow-${stat.color}`}
-            >
-              <div className="flex items-center gap-3">
-                <GlowIcon icon={stat.icon} color={stat.color} size="md" />
-                <div>
-                  <p className="text-white/40 text-xs font-semibold tracking-wide uppercase">{stat.label}</p>
-                  <p className="text-white text-xl font-bold">{stat.value}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+          <StatCard emoji="trophy" label="Total Score" value={stats.totalScore} index={0} />
+          <StatCard emoji="books" label="Quizzes" value={stats.totalQuizzesTaken} index={1} />
+          <StatCard emoji="target" label="Correct" value={stats.totalCorrectAnswers} index={2} />
+          <StatCard emoji="zap" label="Accuracy" value={`${accuracy}%`} index={3} />
         </div>
       </div>
 
@@ -127,7 +110,7 @@ const Index = () => {
             </h2>
             <Button 
               onClick={() => setShowUpload(true)} 
-              className="h-10 px-4 rounded-xl gradient-primary text-white font-semibold shadow-glow-violet border-0 press-effect"
+              className="h-10 px-4 rounded-full glass-button text-white font-semibold border-0 press-effect hover:bg-white/15"
             >
               <Plus className="w-5 h-5 mr-1" strokeWidth={2.5} />
               Add
@@ -136,18 +119,18 @@ const Index = () => {
 
           {loading ? (
             <div className="flex-1 flex items-center justify-center">
-              <div className="w-10 h-10 border-3 border-violet-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-3 border-white/30 border-t-white rounded-full animate-spin" />
             </div>
           ) : quizzes.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
-              <div className="w-20 h-20 mb-4 rounded-2xl glass-card flex items-center justify-center">
-                <BookOpen className="w-10 h-10 text-white/30" strokeWidth={1.5} />
+              <div className="w-20 h-20 mb-4 rounded-[24px] glass-card flex items-center justify-center">
+                <EmojiIcon type="books" size="xl" />
               </div>
               <h3 className="font-bold text-white text-lg mb-2">No quizzes yet</h3>
               <p className="text-white/40 mb-6 text-sm">Upload your first quiz to get started!</p>
               <Button 
                 onClick={() => setShowUpload(true)} 
-                className="h-12 px-6 rounded-xl gradient-primary text-white font-semibold shadow-glow-violet press-effect"
+                className="h-12 px-6 rounded-full glass-button text-white font-semibold press-effect hover:bg-white/15"
               >
                 <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
                 Upload Quiz

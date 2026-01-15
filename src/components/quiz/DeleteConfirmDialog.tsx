@@ -26,20 +26,19 @@ export function DeleteConfirmDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Quiz</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete "{quizName}"? This action cannot be
-            undone and all associated scores will be lost.
+          <AlertDialogTitle>Delete Quiz?</AlertDialogTitle>
+          <AlertDialogDescription className="text-white/50">
+            This will delete "{quizName}" permanently. This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
-            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            className="gradient-danger"
           >
             Delete
           </AlertDialogAction>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
