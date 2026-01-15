@@ -15,6 +15,7 @@ import confetti from 'canvas-confetti';
 import { QuizAttempt, getBadge } from '@/types/quiz';
 import { Badge } from '@/components/quiz/Badge';
 import { Button } from '@/components/ui/button';
+import { GlowIcon } from '@/components/GlowIcon';
 import {
   Table,
   TableBody,
@@ -59,8 +60,8 @@ const QuizResults = () => {
 
   if (!attempt) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -118,22 +119,27 @@ const QuizResults = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen"
+    >
       {/* Header */}
       <div className="px-5 pt-14 pb-6 text-center">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-2xl font-extrabold text-white mb-1"
+          transition={{ duration: 0.4 }}
+          className="text-2xl font-bold text-white mb-1"
         >
-          Quiz Complete!
+          Quiz Complete! <span className="emoji">🎉</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.4 }}
-          className="text-white/70 font-semibold text-sm"
+          className="text-white/50 font-medium text-sm"
         >
           {attempt.quizName}
         </motion.p>
@@ -143,8 +149,8 @@ const QuizResults = () => {
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="bg-content rounded-t-[2rem] min-h-[75vh] shadow-xl"
+        transition={{ delay: 0.1, duration: 0.5 }}
+        className="bg-content rounded-t-[2rem] min-h-[75vh]"
       >
         <div className="px-5 py-6">
           {/* Score */}
@@ -157,7 +163,7 @@ const QuizResults = () => {
             >
               {attempt.score}%
             </motion.div>
-            <p className="text-muted-foreground font-bold text-sm">
+            <p className="text-white/40 font-medium text-sm">
               Score: {correctCount} / {attempt.totalQuestions} correct
             </p>
           </div>
@@ -168,42 +174,33 @@ const QuizResults = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="bg-emerald-50 dark:bg-emerald-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-emerald"
+              className="glass-card rounded-2xl p-4 text-center shadow-glow-emerald"
             >
-              <div className="absolute -right-1 -top-1 opacity-15">
-                <CheckCircle2 className="w-12 h-12 text-emerald-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              <CheckCircle2 className="w-6 h-6 text-emerald-500 mx-auto mb-2" strokeWidth={2.5} />
-              <p className="text-xl font-extrabold text-emerald-600 dark:text-emerald-400">{correctCount}</p>
-              <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 font-bold">Correct</p>
+              <GlowIcon icon={CheckCircle2} color="emerald" size="sm" className="mx-auto mb-2" />
+              <p className="text-xl font-bold text-emerald-400">{correctCount}</p>
+              <p className="text-xs text-white/40 font-medium">Correct</p>
             </motion.div>
             
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.4 }}
-              className="bg-red-50 dark:bg-red-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-red"
+              className="glass-card rounded-2xl p-4 text-center shadow-glow-red"
             >
-              <div className="absolute -right-1 -top-1 opacity-15">
-                <XCircle className="w-12 h-12 text-red-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              <XCircle className="w-6 h-6 text-red-500 mx-auto mb-2" strokeWidth={2.5} />
-              <p className="text-xl font-extrabold text-red-600 dark:text-red-400">{wrongCount}</p>
-              <p className="text-xs text-red-600/70 dark:text-red-400/70 font-bold">Wrong</p>
+              <GlowIcon icon={XCircle} color="red" size="sm" className="mx-auto mb-2" />
+              <p className="text-xl font-bold text-red-400">{wrongCount}</p>
+              <p className="text-xs text-white/40 font-medium">Wrong</p>
             </motion.div>
             
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.4 }}
-              className="bg-amber-50 dark:bg-amber-950/50 rounded-2xl p-4 text-center relative overflow-hidden shadow-edge-amber"
+              className="glass-card rounded-2xl p-4 text-center shadow-glow-amber"
             >
-              <div className="absolute -right-1 -top-1 opacity-15">
-                <Clock className="w-12 h-12 text-amber-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              <Clock className="w-6 h-6 text-amber-500 mx-auto mb-2" strokeWidth={2.5} />
-              <p className="text-xl font-extrabold text-amber-600 dark:text-amber-400">{formatTime(attempt.timeSpent)}</p>
-              <p className="text-xs text-amber-600/70 dark:text-amber-400/70 font-bold">Time</p>
+              <GlowIcon icon={Clock} color="amber" size="sm" className="mx-auto mb-2" />
+              <p className="text-xl font-bold text-amber-400">{formatTime(attempt.timeSpent)}</p>
+              <p className="text-xs text-white/40 font-medium">Time</p>
             </motion.div>
           </div>
 
@@ -212,9 +209,9 @@ const QuizResults = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.5, duration: 0.4 }}
-            className="bg-card rounded-3xl p-5 mb-6 shadow-soft"
+            className="glass-card rounded-3xl p-5 mb-6"
           >
-            <p className="text-xs text-muted-foreground text-center mb-3 font-bold uppercase tracking-wide">Achievement</p>
+            <p className="text-xs text-white/40 text-center mb-3 font-semibold uppercase tracking-wide">Achievement</p>
             <Badge badge={badge} percentage={attempt.score} />
           </motion.div>
 
@@ -227,45 +224,33 @@ const QuizResults = () => {
           >
             <Button
               onClick={() => setShowDetails(!showDetails)}
-              className="h-12 rounded-2xl bg-violet-100 dark:bg-violet-900/50 hover:bg-violet-200 dark:hover:bg-violet-900/70 text-violet-700 dark:text-violet-300 font-bold shadow-edge-violet border-0 relative overflow-hidden transition-transform active:scale-95"
+              className="h-12 rounded-2xl glass-card hover:bg-white/10 text-white font-semibold border-0 press-effect"
             >
-              <div className="absolute -right-1 -top-1 opacity-20">
-                <Eye className="w-10 h-10 text-violet-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              {showDetails ? <EyeOff className="w-5 h-5 mr-2" strokeWidth={2.5} /> : <Eye className="w-5 h-5 mr-2" strokeWidth={2.5} />}
+              <GlowIcon icon={showDetails ? EyeOff : Eye} color="violet" size="sm" className="mr-2" />
               {showDetails ? 'Hide' : 'Answers'}
             </Button>
             
             <Button
               onClick={handleRetryWrong}
               disabled={wrongCount === 0}
-              className="h-12 rounded-2xl bg-amber-100 dark:bg-amber-900/50 hover:bg-amber-200 dark:hover:bg-amber-900/70 text-amber-700 dark:text-amber-300 font-bold shadow-edge-amber border-0 disabled:opacity-50 relative overflow-hidden transition-transform active:scale-95"
+              className="h-12 rounded-2xl glass-card hover:bg-white/10 text-white font-semibold border-0 disabled:opacity-40 press-effect"
             >
-              <div className="absolute -right-1 -top-1 opacity-20">
-                <Target className="w-10 h-10 text-amber-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              <Target className="w-5 h-5 mr-2" strokeWidth={2.5} />
+              <GlowIcon icon={Target} color="amber" size="sm" className="mr-2" />
               Retry Wrong
             </Button>
             
             <Button
               onClick={handleRestartQuiz}
-              className="h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-900/50 hover:bg-cyan-200 dark:hover:bg-cyan-900/70 text-cyan-700 dark:text-cyan-300 font-bold shadow-edge-cyan border-0 relative overflow-hidden transition-transform active:scale-95"
+              className="h-12 rounded-2xl glass-card hover:bg-white/10 text-white font-semibold border-0 press-effect"
             >
-              <div className="absolute -right-1 -top-1 opacity-20">
-                <RefreshCcw className="w-10 h-10 text-cyan-500 blur-sm" strokeWidth={1.5} />
-              </div>
-              <RefreshCcw className="w-5 h-5 mr-2" strokeWidth={2.5} />
+              <GlowIcon icon={RefreshCcw} color="cyan" size="sm" className="mr-2" />
               Restart
             </Button>
             
             <Button
               onClick={() => navigate('/')}
-              className="h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 hover:bg-emerald-200 dark:hover:bg-emerald-900/70 text-emerald-700 dark:text-emerald-300 font-bold shadow-edge-emerald border-0 relative overflow-hidden transition-transform active:scale-95"
+              className="h-12 rounded-2xl gradient-success text-white font-semibold shadow-glow-emerald border-0 press-effect"
             >
-              <div className="absolute -right-1 -top-1 opacity-20">
-                <Home className="w-10 h-10 text-emerald-500 blur-sm" strokeWidth={1.5} />
-              </div>
               <Home className="w-5 h-5 mr-2" strokeWidth={2.5} />
               Home
             </Button>
@@ -278,16 +263,16 @@ const QuizResults = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="bg-card rounded-2xl shadow-soft">
-                  <div className="p-4 border-b border-border flex items-center justify-between">
-                    <h3 className="font-extrabold text-foreground">Answer Review</h3>
+                <div className="glass-card rounded-2xl">
+                  <div className="p-4 border-b border-white/10 flex items-center justify-between">
+                    <h3 className="font-bold text-white">Answer Review</h3>
                     <button
                       onClick={() => setShowWrongOnly(!showWrongOnly)}
-                      className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all ${
-                        showWrongOnly ? 'bg-red-100 dark:bg-red-900/50 text-red-600 dark:text-red-400' : 'bg-muted text-muted-foreground'
+                      className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+                        showWrongOnly ? 'bg-red-500/20 text-red-400' : 'bg-white/10 text-white/60'
                       }`}
                     >
                       {showWrongOnly ? "All" : "Wrong Only"}
@@ -297,37 +282,37 @@ const QuizResults = () => {
                   <div className="overflow-x-auto">
                     <Table>
                       <TableHeader>
-                        <TableRow className="border-border">
-                          <TableHead className="w-12 font-bold text-xs">#</TableHead>
-                          <TableHead className="font-bold text-xs">Question</TableHead>
-                          <TableHead className="w-16 font-bold text-xs">Your</TableHead>
-                          <TableHead className="w-16 font-bold text-xs">Correct</TableHead>
-                          <TableHead className="w-12 text-right font-bold text-xs">Result</TableHead>
+                        <TableRow className="border-white/10">
+                          <TableHead className="w-12 font-semibold text-xs text-white/50">#</TableHead>
+                          <TableHead className="font-semibold text-xs text-white/50">Question</TableHead>
+                          <TableHead className="w-16 font-semibold text-xs text-white/50">Your</TableHead>
+                          <TableHead className="w-16 font-semibold text-xs text-white/50">Correct</TableHead>
+                          <TableHead className="w-12 text-right font-semibold text-xs text-white/50">Result</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
                         {displayedAnswers.map((answer, idx) => (
-                          <TableRow key={idx} className="border-border">
-                            <TableCell className="font-bold text-muted-foreground text-sm">
+                          <TableRow key={idx} className="border-white/10">
+                            <TableCell className="font-semibold text-white/50 text-sm">
                               {answer.questionIndex + 1}
                             </TableCell>
-                            <TableCell className="max-w-[120px] truncate text-foreground text-sm">
+                            <TableCell className="max-w-[120px] truncate text-white text-sm">
                               {answer.questionText}
                             </TableCell>
-                            <TableCell className="font-mono font-bold text-muted-foreground text-sm">
+                            <TableCell className="font-mono font-semibold text-white/50 text-sm">
                               {answer.selectedAnswer}
                             </TableCell>
-                            <TableCell className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
+                            <TableCell className="font-mono font-semibold text-emerald-400 text-sm">
                               {answer.correctAnswer}
                             </TableCell>
                             <TableCell className="text-right">
                               {answer.isCorrect ? (
-                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald-500/20">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-400" strokeWidth={2.5} />
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/50">
-                                  <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" strokeWidth={2.5} />
+                                <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/20">
+                                  <XCircle className="w-4 h-4 text-red-400" strokeWidth={2.5} />
                                 </span>
                               )}
                             </TableCell>
@@ -342,7 +327,7 @@ const QuizResults = () => {
           </AnimatePresence>
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

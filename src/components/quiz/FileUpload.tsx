@@ -1,10 +1,11 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Upload, FileText, X, Loader2, File } from 'lucide-react';
+import { Upload, Loader2 } from 'lucide-react';
 import { parseQuizFile } from '@/lib/quizParser';
 import { saveQuiz } from '@/lib/quizStorage';
 import { Quiz } from '@/types/quiz';
 import { toast } from 'sonner';
+import { GlowIcon } from '@/components/GlowIcon';
 
 interface FileUploadProps {
   onQuizUploaded: (quiz: Quiz) => void;
@@ -78,7 +79,7 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
   };
 
   return (
-    <div className="w-full px-0">
+    <div className="w-full">
       <input
         ref={fileInputRef}
         type="file"
@@ -98,7 +99,7 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
         className={`
           relative rounded-2xl border-2 border-dashed p-8 cursor-pointer
           transition-all duration-200
-          ${isDragging ? 'border-violet-500 bg-violet-50' : 'border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-violet-50/50'}
+          ${isDragging ? 'border-violet-500 bg-violet-500/10' : 'border-white/20 bg-white/5 hover:border-violet-400/50 hover:bg-violet-500/5'}
         `}
         onClick={() => !isProcessing && fileInputRef.current?.click()}
       >
@@ -111,12 +112,12 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-violet-600 animate-spin" />
+              <div className="w-16 h-16 rounded-2xl glass-card flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-violet-400 animate-spin" />
               </div>
               <div className="text-center">
-                <p className="font-semibold text-gray-900">Processing quiz...</p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="font-semibold text-white">Processing quiz...</p>
+                <p className="text-sm text-white/40 mt-1">
                   {selectedFile?.name}
                 </p>
               </div>
@@ -129,20 +130,18 @@ export function FileUpload({ onQuizUploaded }: FileUploadProps) {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center gap-4"
             >
-              <div className="w-16 h-16 rounded-2xl bg-violet-100 flex items-center justify-center">
-                <Upload className="w-8 h-8 text-violet-600" />
-              </div>
+              <GlowIcon icon={Upload} color="violet" size="lg" />
               <div className="text-center">
-                <p className="font-semibold text-gray-900">
+                <p className="font-semibold text-white">
                   Drop your quiz file here
                 </p>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-white/40 mt-1">
                   or tap to browse
                 </p>
                 <div className="flex items-center justify-center gap-2 mt-3">
-                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.txt</span>
-                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.docx</span>
-                  <span className="px-2 py-1 rounded-lg bg-gray-100 text-xs font-medium text-gray-500">.pdf</span>
+                  <span className="px-2 py-1 rounded-lg bg-white/10 text-xs font-medium text-white/50">.txt</span>
+                  <span className="px-2 py-1 rounded-lg bg-white/10 text-xs font-medium text-white/50">.docx</span>
+                  <span className="px-2 py-1 rounded-lg bg-white/10 text-xs font-medium text-white/50">.pdf</span>
                 </div>
               </div>
             </motion.div>
