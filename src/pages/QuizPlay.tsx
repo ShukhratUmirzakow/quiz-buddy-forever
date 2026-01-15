@@ -7,6 +7,7 @@ import { Quiz, QuizQuestion, QuizSettings, QuizAttempt } from '@/types/quiz';
 import { getQuiz, saveAttempt, updateQuizStats, updateUserStats } from '@/lib/quizStorage';
 import { prepareQuizQuestions } from '@/lib/quizParser';
 import { Button } from '@/components/ui/button';
+import { GlowIcon } from '@/components/GlowIcon';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -178,7 +179,6 @@ const QuizPlay = () => {
       setTimeout(triggerConfetti, 100);
     }
 
-    // Fast mode auto-advance
     if (fastMode) {
       setTimeout(() => {
         goToNext();
@@ -187,14 +187,8 @@ const QuizPlay = () => {
   };
 
   const handleNext = () => goToNext();
-
   const handlePauseToggle = () => setIsPaused(!isPaused);
-
-  const handleExit = () => {
-    setShowExitDialog(true);
-    setIsPaused(true);
-  };
-
+  const handleExit = () => { setShowExitDialog(true); setIsPaused(true); };
   const confirmExit = () => navigate('/');
 
   const getOptionState = (label: string) => {
@@ -206,8 +200,8 @@ const QuizPlay = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -215,7 +209,12 @@ const QuizPlay = () => {
   if (!quiz || !currentQuestion) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 dark:from-violet-900 dark:via-purple-900 dark:to-fuchsia-900 flex flex-col">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+      className="min-h-screen flex flex-col"
+    >
       {/* Pause Overlay */}
       <AnimatePresence>
         {isPaused && !showExitDialog && (
@@ -223,26 +222,24 @@ const QuizPlay = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 flex items-center justify-center"
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-xl z-40 flex items-center justify-center"
             onClick={handlePauseToggle}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="glass-strong rounded-3xl p-8 text-center shadow-xl mx-5"
+              transition={{ duration: 0.25 }}
+              className="glass-card rounded-3xl p-8 text-center shadow-glow-violet mx-5"
               onClick={e => e.stopPropagation()}
             >
-              <div className="w-20 h-20 rounded-full bg-violet-100 dark:bg-violet-900/50 flex items-center justify-center mx-auto mb-4 shadow-edge-violet">
-                <Pause className="w-10 h-10 text-violet-600 dark:text-violet-400" strokeWidth={2.5} />
-              </div>
-              <h2 className="text-2xl font-extrabold text-foreground mb-2">Paused</h2>
-              <p className="text-muted-foreground font-semibold mb-6">Take your time</p>
+              <GlowIcon icon={Pause} color="violet" size="lg" className="mx-auto mb-4" />
+              <h2 className="text-2xl font-bold text-white mb-2">Paused</h2>
+              <p className="text-white/50 font-medium mb-6">Take your time</p>
               <Button
                 onClick={handlePauseToggle}
-                className="w-full h-14 rounded-2xl gradient-success text-white font-extrabold text-lg shadow-edge-emerald transition-transform active:scale-[0.98]"
+                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-glow-emerald press-effect"
               >
                 <Play className="w-5 h-5 mr-2" strokeWidth={2.5} />
                 Resume
@@ -257,7 +254,7 @@ const QuizPlay = () => {
         <div className="flex items-center justify-between mb-5">
           <button
             onClick={handleExit}
-            className="w-11 h-11 rounded-full glass-dark flex items-center justify-center text-white transition-transform active:scale-95"
+            className="w-11 h-11 rounded-full glass-button flex items-center justify-center text-white/70 hover:text-white transition-colors press-effect"
           >
             <ArrowLeft className="w-5 h-5" strokeWidth={2.5} />
           </button>
@@ -267,14 +264,14 @@ const QuizPlay = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.2 }}
-            className="text-white font-extrabold text-lg"
+            className="text-white font-bold text-lg"
           >
             {String(currentIndex + 1).padStart(2, '0')} / {String(questions.length).padStart(2, '0')}
           </motion.div>
 
           <button
             onClick={handlePauseToggle}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-amber-400 text-amber-900 font-bold shadow-edge-amber transition-transform active:scale-95"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full gradient-warning text-white font-semibold shadow-glow-amber press-effect"
           >
             <Clock className="w-4 h-4" strokeWidth={2.5} />
             <span className="tabular-nums text-sm">{formatTime(seconds)}</span>
@@ -282,11 +279,11 @@ const QuizPlay = () => {
         </div>
 
         {/* Progress Bar */}
-        <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progressPercentage}%` }}
-            transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.3 }}
             className="h-full gradient-success rounded-full"
           />
         </div>
@@ -300,15 +297,15 @@ const QuizPlay = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.25 }}
             className="flex-1 flex flex-col"
           >
-            {/* White Card */}
-            <div className="glass-strong rounded-3xl p-6 shadow-xl mb-5">
-              <p className="text-xs text-muted-foreground font-bold uppercase tracking-wide mb-3">
+            {/* Question Card */}
+            <div className="glass-card rounded-3xl p-6 mb-5">
+              <p className="text-xs text-white/40 font-semibold uppercase tracking-wide mb-3">
                 {quiz.name}
               </p>
-              <h2 className="text-lg font-bold text-foreground leading-relaxed">
+              <h2 className="text-lg font-semibold text-white leading-relaxed">
                 {currentQuestion.question}
               </h2>
             </div>
@@ -327,18 +324,18 @@ const QuizPlay = () => {
                     className={`
                       w-full p-4 rounded-2xl text-left transition-all duration-200
                       flex items-center justify-between
-                      ${state === 'default' ? 'glass-strong hover:shadow-lg' : ''}
-                      ${state === 'correct' ? 'bg-emerald-50 dark:bg-emerald-950/50 ring-2 ring-emerald-400 shadow-edge-emerald' : ''}
-                      ${state === 'wrong' ? 'bg-red-50 dark:bg-red-950/50 ring-2 ring-red-400 shadow-edge-red' : ''}
-                      ${state === 'disabled' ? 'glass-strong opacity-60' : ''}
+                      ${state === 'default' ? 'glass-card hover:border-white/20' : ''}
+                      ${state === 'correct' ? 'bg-emerald-500/20 border border-emerald-400/50 shadow-glow-emerald' : ''}
+                      ${state === 'wrong' ? 'bg-red-500/20 border border-red-400/50 shadow-glow-red' : ''}
+                      ${state === 'disabled' ? 'glass-card opacity-50' : ''}
                       ${!showResult ? 'cursor-pointer' : 'cursor-default'}
                     `}
                   >
                     <span className={`
-                      font-semibold text-sm leading-snug pr-4
-                      ${state === 'correct' ? 'text-emerald-700 dark:text-emerald-300' : ''}
-                      ${state === 'wrong' ? 'text-red-700 dark:text-red-300' : ''}
-                      ${state === 'default' || state === 'disabled' ? 'text-foreground' : ''}
+                      font-medium text-sm leading-snug pr-4
+                      ${state === 'correct' ? 'text-emerald-300' : ''}
+                      ${state === 'wrong' ? 'text-red-300' : ''}
+                      ${state === 'default' || state === 'disabled' ? 'text-white' : ''}
                     `}>
                       {option.text}
                     </span>
@@ -348,7 +345,7 @@ const QuizPlay = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                        className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 shadow-lg"
+                        className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0"
                       >
                         <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -360,7 +357,7 @@ const QuizPlay = () => {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: 'spring', stiffness: 400, damping: 15 }}
-                        className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0 shadow-lg"
+                        className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center flex-shrink-0"
                       >
                         <X className="w-4 h-4 text-white" strokeWidth={3} />
                       </motion.div>
@@ -372,7 +369,7 @@ const QuizPlay = () => {
           </motion.div>
         </AnimatePresence>
 
-        {/* Next Button - Only show if not fast mode */}
+        {/* Next Button */}
         {!fastMode && (
           <AnimatePresence>
             {showResult && (
@@ -380,12 +377,12 @@ const QuizPlay = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                transition={{ duration: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
+                transition={{ duration: 0.2 }}
                 className="mt-5"
               >
                 <Button
                   onClick={handleNext}
-                  className="w-full h-14 rounded-2xl gradient-success text-white font-extrabold text-lg shadow-edge-emerald border-0 transition-transform active:scale-[0.98]"
+                  className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-glow-emerald border-0 press-effect"
                 >
                   {isLastQuestion ? 'View Results' : 'Next'}
                 </Button>
@@ -397,30 +394,30 @@ const QuizPlay = () => {
 
       {/* Exit Dialog */}
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
-        <AlertDialogContent className="rounded-3xl border-0 shadow-xl mx-5">
+        <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-extrabold">Exit Quiz?</AlertDialogTitle>
-            <AlertDialogDescription className="font-semibold">
+            <AlertDialogTitle className="text-xl font-bold">Exit Quiz?</AlertDialogTitle>
+            <AlertDialogDescription className="text-white/50">
               Your progress will not be saved. Are you sure?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="gap-3">
             <AlertDialogCancel 
               onClick={() => setIsPaused(false)}
-              className="rounded-xl h-12 font-bold"
+              className="rounded-xl h-12 font-semibold glass-button border-white/10 text-white hover:bg-white/10"
             >
               Continue
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmExit}
-              className="rounded-xl h-12 bg-red-500 hover:bg-red-600 font-bold shadow-edge-red"
+              className="rounded-xl h-12 gradient-danger font-semibold shadow-glow-red"
             >
               Exit
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </motion.div>
   );
 };
 
