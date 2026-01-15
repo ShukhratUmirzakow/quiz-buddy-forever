@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
-import { BookOpen, Trophy, Trash2, ChevronRight } from 'lucide-react';
+import { Trash2, ChevronRight, Trophy } from 'lucide-react';
 import { Quiz } from '@/types/quiz';
-import { GlowIcon } from '@/components/GlowIcon';
+import { EmojiIcon } from '@/components/EmojiIcon';
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -18,11 +18,13 @@ export function QuizCard({ quiz, index, onPlay, onDelete }: QuizCardProps) {
       exit={{ opacity: 0, x: -80, transition: { duration: 0.2 } }}
       transition={{ delay: index * 0.05, duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
       layout
-      className="glass-card rounded-2xl p-4"
+      className="glass-card rounded-[20px] p-4"
     >
       <div className="flex items-center gap-4">
         {/* Icon */}
-        <GlowIcon icon={BookOpen} color="violet" size="md" />
+        <div className="w-12 h-12 rounded-2xl glass-button flex items-center justify-center flex-shrink-0">
+          <EmojiIcon type="books" size="lg" />
+        </div>
 
         {/* Content */}
         <div className="flex-1 min-w-0">
@@ -51,14 +53,14 @@ export function QuizCard({ quiz, index, onPlay, onDelete }: QuizCardProps) {
               e.stopPropagation();
               onDelete();
             }}
-            className="w-9 h-9 rounded-xl glass-button flex items-center justify-center text-white/40 hover:text-red-400 hover:shadow-glow-red transition-all press-effect"
+            className="w-10 h-10 rounded-2xl glass-button flex items-center justify-center text-white/40 hover:text-red-400 hover:bg-red-500/10 transition-all press-effect"
           >
             <Trash2 className="w-4 h-4" strokeWidth={2.5} />
           </button>
           
           <button
             onClick={onPlay}
-            className="w-10 h-10 rounded-xl gradient-success flex items-center justify-center text-white shadow-glow-emerald press-effect"
+            className="w-10 h-10 rounded-2xl gradient-success flex items-center justify-center text-white press-effect"
           >
             <ChevronRight className="w-5 h-5" strokeWidth={2.5} />
           </button>

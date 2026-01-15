@@ -7,7 +7,7 @@ import { Quiz, QuizQuestion, QuizSettings, QuizAttempt } from '@/types/quiz';
 import { getQuiz, saveAttempt, updateQuizStats, updateUserStats } from '@/lib/quizStorage';
 import { prepareQuizQuestions } from '@/lib/quizParser';
 import { Button } from '@/components/ui/button';
-import { GlowIcon } from '@/components/GlowIcon';
+import { EmojiIcon } from '@/components/EmojiIcon';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -201,7 +201,7 @@ const QuizPlay = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-500 border-t-transparent rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-white/30 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -223,7 +223,7 @@ const QuizPlay = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-xl z-40 flex items-center justify-center"
+            className="fixed inset-0 glass-overlay z-40 flex items-center justify-center"
             onClick={handlePauseToggle}
           >
             <motion.div
@@ -231,15 +231,17 @@ const QuizPlay = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="glass-card rounded-3xl p-8 text-center shadow-glow-violet mx-5"
+              className="glass-card rounded-[28px] p-8 text-center mx-5"
               onClick={e => e.stopPropagation()}
             >
-              <GlowIcon icon={Pause} color="violet" size="lg" className="mx-auto mb-4" />
+              <div className="w-16 h-16 rounded-[20px] glass-button flex items-center justify-center mx-auto mb-4">
+                <Pause className="w-8 h-8 text-white" strokeWidth={2} />
+              </div>
               <h2 className="text-2xl font-bold text-white mb-2">Paused</h2>
               <p className="text-white/50 font-medium mb-6">Take your time</p>
               <Button
                 onClick={handlePauseToggle}
-                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-glow-emerald press-effect"
+                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg press-effect"
               >
                 <Play className="w-5 h-5 mr-2" strokeWidth={2.5} />
                 Resume
@@ -271,7 +273,7 @@ const QuizPlay = () => {
 
           <button
             onClick={handlePauseToggle}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full gradient-warning text-white font-semibold shadow-glow-amber press-effect"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-full glass-button text-white font-semibold press-effect hover:bg-white/15"
           >
             <Clock className="w-4 h-4" strokeWidth={2.5} />
             <span className="tabular-nums text-sm">{formatTime(seconds)}</span>
@@ -301,7 +303,7 @@ const QuizPlay = () => {
             className="flex-1 flex flex-col"
           >
             {/* Question Card */}
-            <div className="glass-card rounded-3xl p-6 mb-5">
+            <div className="glass-card rounded-[24px] p-6 mb-5">
               <p className="text-xs text-white/40 font-semibold uppercase tracking-wide mb-3">
                 {quiz.name}
               </p>
@@ -322,11 +324,11 @@ const QuizPlay = () => {
                     disabled={showResult}
                     whileTap={!showResult ? { scale: 0.98 } : undefined}
                     className={`
-                      w-full p-4 rounded-2xl text-left transition-all duration-200
+                      w-full p-4 rounded-[20px] text-left transition-all duration-200
                       flex items-center justify-between
-                      ${state === 'default' ? 'glass-card hover:border-white/20' : ''}
-                      ${state === 'correct' ? 'bg-emerald-500/20 border border-emerald-400/50 shadow-glow-emerald' : ''}
-                      ${state === 'wrong' ? 'bg-red-500/20 border border-red-400/50 shadow-glow-red' : ''}
+                      ${state === 'default' ? 'glass-card hover:bg-white/10' : ''}
+                      ${state === 'correct' ? 'bg-emerald-500/20 border border-emerald-400/40' : ''}
+                      ${state === 'wrong' ? 'bg-red-500/20 border border-red-400/40' : ''}
                       ${state === 'disabled' ? 'glass-card opacity-50' : ''}
                       ${!showResult ? 'cursor-pointer' : 'cursor-default'}
                     `}
@@ -382,7 +384,7 @@ const QuizPlay = () => {
               >
                 <Button
                   onClick={handleNext}
-                  className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg shadow-glow-emerald border-0 press-effect"
+                  className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg border-0 press-effect"
                 >
                   {isLastQuestion ? 'View Results' : 'Next'}
                 </Button>
@@ -396,24 +398,21 @@ const QuizPlay = () => {
       <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl font-bold">Exit Quiz?</AlertDialogTitle>
+            <AlertDialogTitle>Exit Quiz?</AlertDialogTitle>
             <AlertDialogDescription className="text-white/50">
               Your progress will not be saved. Are you sure?
             </AlertDialogDescription>
           </AlertDialogHeader>
-          <AlertDialogFooter className="gap-3">
-            <AlertDialogCancel 
-              onClick={() => setIsPaused(false)}
-              className="rounded-xl h-12 font-semibold glass-button border-white/10 text-white hover:bg-white/10"
-            >
-              Continue
-            </AlertDialogCancel>
+          <AlertDialogFooter>
             <AlertDialogAction
               onClick={confirmExit}
-              className="rounded-xl h-12 gradient-danger font-semibold shadow-glow-red"
+              className="gradient-danger"
             >
               Exit
             </AlertDialogAction>
+            <AlertDialogCancel onClick={() => setIsPaused(false)}>
+              Continue
+            </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
