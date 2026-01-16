@@ -9,18 +9,21 @@ import { QuizSettingsDialog } from '@/components/quiz/QuizSettings';
 import { DeleteConfirmDialog } from '@/components/quiz/DeleteConfirmDialog';
 import { OnboardingDialog } from '@/components/OnboardingDialog';
 import { SettingsDialog } from '@/components/SettingsDialog';
+import { BackgroundAccent } from '@/components/BackgroundAccent';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { StatCard } from '@/components/StatCard';
 import { IconImage } from '@/components/IconImage';
-import { getUserProfile, hasUserProfile, UserProfile } from '@/lib/userStorage';
+import { getUserProfile, UserProfile } from '@/lib/userStorage';
+import { useLanguage } from '@/hooks/useLanguage';
 import defaultAvatar from '@/assets/user.png';
 import settingsIcon from '@/assets/settings.png';
 
 const Index = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [stats, setStats] = useState<UserStats>({ totalScore: 0, totalQuizzesTaken: 0, totalCorrectAnswers: 0, totalQuestionsAnswered: 0 });
   const [loading, setLoading] = useState(true);
@@ -93,10 +96,12 @@ const Index = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
     >
+      <BackgroundAccent variant="home" />
+      
       {/* Header */}
-      <div className="px-5 pt-14 pb-6">
+      <div className="px-5 pt-14 pb-6 relative z-10">
         {/* Top Bar with Avatar and Settings */}
         <motion.div 
           initial={{ opacity: 0, y: -10 }} 
@@ -113,7 +118,7 @@ const Index = () => {
               />
             </div>
             <div>
-              <p className="text-white/50 text-xs font-medium">Welcome back</p>
+              <p className="text-white/50 text-xs font-medium">{t('welcome_back')}</p>
               <h1 className="text-xl font-bold text-white font-display">
                 {userProfile?.name || 'User'}
               </h1>
@@ -129,10 +134,10 @@ const Index = () => {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard icon="trophy" label="Total Score" value={stats.totalScore} index={0} />
-          <StatCard icon="quizzes" label="Quizzes" value={stats.totalQuizzesTaken} index={1} />
-          <StatCard icon="correct" label="Correct" value={stats.totalCorrectAnswers} index={2} />
-          <StatCard icon="accuracy" label="Accuracy" value={`${accuracy}%`} index={3} />
+          <StatCard icon="trophy" label={t('score')} value={stats.totalScore} index={0} />
+          <StatCard icon="quizzes" label={t('quizzes')} value={stats.totalQuizzesTaken} index={1} />
+          <StatCard icon="correct" label={t('correct')} value={stats.totalCorrectAnswers} index={2} />
+          <StatCard icon="accuracy" label={t('accuracy')} value={`${accuracy}%`} index={3} />
         </div>
       </div>
 
@@ -141,12 +146,12 @@ const Index = () => {
         initial={{ opacity: 0, y: 40 }} 
         animate={{ opacity: 1, y: 0 }} 
         transition={{ delay: 0.4, duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="flex-1 bg-content rounded-t-[2rem] flex flex-col"
+        className="flex-1 bg-content rounded-t-[2rem] flex flex-col relative z-10"
       >
         <div className="px-5 py-6 flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-lg font-bold text-white font-display">
-              Your Quizzes
+              {t('quizzes')}
               {quizzes.length > 0 && (
                 <span className="ml-2 text-sm font-medium text-white/40">({quizzes.length})</span>
               )}
@@ -156,7 +161,7 @@ const Index = () => {
               className="h-10 px-4 rounded-full glass-button text-white font-semibold border-0 press-effect hover:bg-white/15"
             >
               <Plus className="w-5 h-5 mr-1" strokeWidth={2.5} />
-              Add
+              {t('add')}
             </Button>
           </div>
 
@@ -169,14 +174,14 @@ const Index = () => {
               <div className="w-20 h-20 mb-4 rounded-[24px] glass-card flex items-center justify-center">
                 <IconImage type="quizzes" size="xl" />
               </div>
-              <h3 className="font-bold text-white text-lg mb-2 font-display">No quizzes yet</h3>
-              <p className="text-white/40 mb-6 text-sm">Upload your first quiz to get started!</p>
+              <h3 className="font-bold text-white text-lg mb-2 font-display">{t('no_quizzes')}</h3>
+              <p className="text-white/40 mb-6 text-sm">{t('upload_first_quiz')}</p>
               <Button 
                 onClick={() => setShowUpload(true)} 
                 className="h-12 px-6 rounded-full glass-button text-white font-semibold press-effect hover:bg-white/15"
               >
                 <Plus className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                Upload Quiz
+                {t('upload_quiz')}
               </Button>
             </div>
           ) : (
@@ -212,7 +217,7 @@ const Index = () => {
       <Dialog open={showUpload} onOpenChange={setShowUpload}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-center font-display">Upload Quiz</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-center font-display">{t('upload_quiz')}</DialogTitle>
           </DialogHeader>
           <FileUpload onQuizUploaded={handleQuizUploaded} />
         </DialogContent>

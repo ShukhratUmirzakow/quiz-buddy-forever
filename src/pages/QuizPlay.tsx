@@ -7,7 +7,8 @@ import { Quiz, QuizQuestion, QuizSettings, QuizAttempt } from '@/types/quiz';
 import { getQuiz, saveAttempt, updateQuizStats, updateUserStats } from '@/lib/quizStorage';
 import { prepareQuizQuestions } from '@/lib/quizParser';
 import { Button } from '@/components/ui/button';
-import { EmojiIcon } from '@/components/EmojiIcon';
+import { BackgroundAccent } from '@/components/BackgroundAccent';
+import { useLanguage } from '@/hooks/useLanguage';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -22,6 +23,7 @@ import {
 const QuizPlay = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -118,17 +120,10 @@ const QuizPlay = () => {
   const goToNext = useCallback(async () => {
     if (isLastQuestion) {
       setIsTimerRunning(false);
-      const correctCount = answers.filter(a => a.isCorrect).length + (selectedAnswer === currentQuestion.correctAnswer ? 1 : 0);
+      
+      // Use the answers array directly - it already has all answered questions
       const finalAnswers = [...answers];
-      if (selectedAnswer) {
-        finalAnswers.push({
-          questionIndex: currentIndex,
-          selectedAnswer,
-          correctAnswer: currentQuestion.correctAnswer,
-          isCorrect: selectedAnswer === currentQuestion.correctAnswer,
-          questionText: currentQuestion.question,
-        });
-      }
+      const correctCount = finalAnswers.filter(a => a.isCorrect).length;
       const score = Math.round((correctCount / questions.length) * 100);
 
       const attempt: QuizAttempt = {
@@ -153,7 +148,7 @@ const QuizPlay = () => {
       setSelectedAnswer(null);
       setShowResult(false);
     }
-  }, [isLastQuestion, answers, selectedAnswer, currentQuestion, currentIndex, questions, quiz, seconds, navigate]);
+  }, [isLastQuestion, answers, questions, quiz, seconds, navigate]);
 
   const handleAnswerSelect = (label: string) => {
     if (showResult) return;
@@ -163,6 +158,7 @@ const QuizPlay = () => {
 
     const isCorrect = label === currentQuestion.correctAnswer;
 
+    // Add answer to array
     setAnswers(prev => [
       ...prev,
       {
@@ -213,8 +209,10 @@ const QuizPlay = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className="min-h-screen flex flex-col"
+      className="min-h-screen flex flex-col relative"
     >
+      <BackgroundAccent variant="quiz" />
+      
       {/* Pause Overlay */}
       <AnimatePresence>
         {isPaused && !showExitDialog && (
@@ -237,14 +235,14 @@ const QuizPlay = () => {
               <div className="w-16 h-16 rounded-[20px] glass-button flex items-center justify-center mx-auto mb-4">
                 <Pause className="w-8 h-8 text-white" strokeWidth={2} />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-2">Paused</h2>
-              <p className="text-white/50 font-medium mb-6">Take your time</p>
+              <h2 className="text-2xl font-bold text-white mb-2">{t('paused')}</h2>
+              <p className="text-white/50 font-medium mb-6">{t('take_your_time')}</p>
               <Button
                 onClick={handlePauseToggle}
                 className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg press-effect"
               >
                 <Play className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                Resume
+                {t('resume')}
               </Button>
             </motion.div>
           </motion.div>
@@ -252,7 +250,7 @@ const QuizPlay = () => {
       </AnimatePresence>
 
       {/* Header */}
-      <div className="px-5 pt-14 pb-4">
+      <div className="px-5 pt-14 pb-4 relative z-10">
         <div className="flex items-center justify-between mb-5">
           <button
             onClick={handleExit}
@@ -292,7 +290,7 @@ const QuizPlay = () => {
       </div>
 
       {/* Question Card */}
-      <div className="flex-1 px-5 pb-8 flex flex-col">
+      <div className="flex-1 px-5 pb-8 flex flex-col relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
@@ -386,7 +384,7 @@ const QuizPlay = () => {
                   onClick={handleNext}
                   className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg border-0 press-effect"
                 >
-                  {isLastQuestion ? 'View Results' : 'Next'}
+                  {isLastQuestion ? t('view_results') : t('next')}
                 </Button>
               </motion.div>
             )}
@@ -401,9 +399,9 @@ const QuizPlay = () => {
       }}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Exit Quiz?</AlertDialogTitle>
+            <AlertDialogTitle>{t('exit_quiz')}</AlertDialogTitle>
             <AlertDialogDescription className="text-white/50">
-              Your progress will not be saved. Are you sure?
+              {t('progress_not_saved')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -411,10 +409,10 @@ const QuizPlay = () => {
               onClick={confirmExit}
               className="gradient-danger"
             >
-              Exit
+              {t('exit')}
             </AlertDialogAction>
             <AlertDialogCancel>
-              Continue
+              {t('continue')}
             </AlertDialogCancel>
           </AlertDialogFooter>
         </AlertDialogContent>
