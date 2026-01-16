@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
 @layer base {
   :root {
     /* Deep dark theme - no light mode */
@@ -64,12 +62,17 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background: hsl(0, 0%, 4%);
     min-height: 100vh;
   }
+}
+
+/* Rubik font for bold headings */
+h1, h2, h3, .font-display {
+  font-family: 'Rubik', -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
 }
 
 @layer utilities {

@@ -1,18 +1,18 @@
 import { motion } from 'framer-motion';
-import { EmojiIcon } from './EmojiIcon';
+import { IconImage } from './IconImage';
 import { cn } from '@/lib/utils';
 
-type EmojiType = 'wave' | 'fire' | 'trophy' | 'target' | 'books' | 'zap' | 'sparkles' | 'party' | 'check' | 'cross';
+type IconType = 'trophy' | 'accuracy' | 'correct' | 'congrats' | 'settings' | 'user' | 'quizzes';
 
 interface StatCardProps {
-  emoji: EmojiType;
+  icon: IconType;
   label: string;
   value: string | number;
   index: number;
   className?: string;
 }
 
-export function StatCard({ emoji, label, value, index, className }: StatCardProps) {
+export function StatCard({ icon, label, value, index, className }: StatCardProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -25,11 +25,11 @@ export function StatCard({ emoji, label, value, index, className }: StatCardProp
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-2xl glass-button flex items-center justify-center">
-          <EmojiIcon type={emoji} size="md" />
+          <IconImage type={icon} size="md" />
         </div>
         <div>
           <p className="text-white/40 text-xs font-medium tracking-wide uppercase">{label}</p>
-          <p className="text-white text-xl font-bold">{value}</p>
+          <p className="text-white text-xl font-bold font-display">{value}</p>
         </div>
       </div>
     </motion.div>

@@ -395,7 +395,10 @@ const QuizPlay = () => {
       </div>
 
       {/* Exit Dialog */}
-      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+      <AlertDialog open={showExitDialog} onOpenChange={(open) => {
+        setShowExitDialog(open);
+        if (!open) setIsPaused(false);
+      }}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Exit Quiz?</AlertDialogTitle>
@@ -410,7 +413,7 @@ const QuizPlay = () => {
             >
               Exit
             </AlertDialogAction>
-            <AlertDialogCancel onClick={() => setIsPaused(false)}>
+            <AlertDialogCancel>
               Continue
             </AlertDialogCancel>
           </AlertDialogFooter>
