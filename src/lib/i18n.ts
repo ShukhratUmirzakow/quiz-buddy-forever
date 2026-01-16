@@ -74,6 +74,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'your': 'Your',
     'result': 'Result',
     'close': 'Close',
+    'your_answer': 'Your Answer',
+    'correct_answer': 'Correct Answer',
     
     // Settings
     'settings': 'Settings',
@@ -164,6 +166,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'your': 'Sizning',
     'result': 'Natija',
     'close': 'Yopish',
+    'your_answer': 'Sizning javobingiz',
+    'correct_answer': 'To\'g\'ri javob',
     
     // Settings
     'settings': 'Sozlamalar',
@@ -254,6 +258,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'your': 'Ваш',
     'result': 'Результат',
     'close': 'Закрыть',
+    'your_answer': 'Ваш ответ',
+    'correct_answer': 'Правильный ответ',
     
     // Settings
     'settings': 'Настройки',
