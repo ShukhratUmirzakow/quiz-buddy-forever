@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getUserProfile, saveUserProfile, UserProfile } from '@/lib/userStorage';
-import { Language, LANGUAGES, getCurrentLanguage, setCurrentLanguage } from '@/lib/i18n';
+import { Language, LANGUAGES, getCurrentLanguage } from '@/lib/i18n';
 import { useLanguage } from '@/hooks/useLanguage';
+import { EnglishFlag, UzbekFlag, RussianFlag } from '@/components/FlagIcons';
 import defaultAvatar from '@/assets/user.png';
 
 interface SettingsDialogProps {
@@ -159,22 +160,27 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
               {t('language')}
             </Label>
             <div className="grid grid-cols-3 gap-2">
-              {LANGUAGES.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageSelect(lang.code)}
-                  className={`
-                    flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all press-effect
-                    ${selectedLanguage === lang.code 
-                      ? 'glass-card border-white/30 bg-white/10' 
-                      : 'glass-button hover:bg-white/10'
-                    }
-                  `}
-                >
-                  <span className="text-2xl">{lang.flag}</span>
-                  <span className="text-xs text-white/70 font-medium">{lang.nativeName}</span>
-                </button>
-              ))}
+              {LANGUAGES.map((lang) => {
+                const FlagComponent = lang.code === 'en' ? EnglishFlag : lang.code === 'uz' ? UzbekFlag : RussianFlag;
+                return (
+                  <button
+                    key={lang.code}
+                    onClick={() => handleLanguageSelect(lang.code)}
+                    className={`
+                      flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all press-effect
+                      ${selectedLanguage === lang.code 
+                        ? 'glass-card border-white/30 bg-white/10' 
+                        : 'glass-button hover:bg-white/10'
+                      }
+                    `}
+                  >
+                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
+                      <FlagComponent />
+                    </div>
+                    <span className="text-xs text-white/70 font-medium">{lang.nativeName}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 

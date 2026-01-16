@@ -11,16 +11,16 @@ export function BackgroundAccent({ variant = 'home', badgeColor }: BackgroundAcc
     if (badgeColor) {
       switch (badgeColor) {
         case 'gold':
-          return 'rgba(251, 191, 36, 0.08)';
+          return 'rgba(251, 191, 36, 0.25)';
         case 'silver':
-          return 'rgba(148, 163, 184, 0.08)';
+          return 'rgba(148, 163, 184, 0.25)';
         case 'bronze':
-          return 'rgba(251, 146, 60, 0.08)';
+          return 'rgba(251, 146, 60, 0.25)';
         case 'participant':
-          return 'rgba(96, 165, 250, 0.08)';
+          return 'rgba(96, 165, 250, 0.25)';
       }
     }
-    return 'rgba(34, 197, 94, 0.04)'; // Very subtle dark green
+    return 'rgba(34, 197, 94, 0.15)'; // More visible dark green
   };
 
   return (
