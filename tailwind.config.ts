@@ -15,6 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Nunito', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Rounded', 'Segoe UI', 'Roboto', 'sans-serif'],
+        display: ['Rubik', '-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

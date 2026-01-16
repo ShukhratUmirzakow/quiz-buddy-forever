@@ -7,12 +7,17 @@ import { QuizCard } from '@/components/quiz/QuizCard';
 import { FileUpload } from '@/components/quiz/FileUpload';
 import { QuizSettingsDialog } from '@/components/quiz/QuizSettings';
 import { DeleteConfirmDialog } from '@/components/quiz/DeleteConfirmDialog';
+import { OnboardingDialog } from '@/components/OnboardingDialog';
+import { SettingsDialog } from '@/components/SettingsDialog';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { StatCard } from '@/components/StatCard';
-import { EmojiIcon } from '@/components/EmojiIcon';
+import { IconImage } from '@/components/IconImage';
+import { getUserProfile, hasUserProfile, UserProfile } from '@/lib/userStorage';
+import defaultAvatar from '@/assets/user.png';
+import settingsIcon from '@/assets/settings.png';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,12 +28,23 @@ const Index = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
   const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [showUserSettings, setShowUserSettings] = useState(false);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   const loadData = useCallback(async () => {
     try {
       const [loadedQuizzes, loadedStats] = await Promise.all([getAllQuizzes(), getUserStats()]);
       setQuizzes(loadedQuizzes);
       setStats(loadedStats);
+      
+      // Check for user profile
+      const profile = getUserProfile();
+      if (profile) {
+        setUserProfile(profile);
+      } else {
+        setShowOnboarding(true);
+      }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -37,6 +53,17 @@ const Index = () => {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const handleOnboardingComplete = (profile: UserProfile) => {
+    setUserProfile(profile);
+    setShowOnboarding(false);
+    toast.success(`Welcome, ${profile.name}!`);
+  };
+
+  const handleProfileUpdate = (profile: UserProfile) => {
+    setUserProfile(profile);
+    toast.success('Profile updated!');
+  };
 
   const handleQuizUploaded = (quiz: Quiz) => { setQuizzes(prev => [quiz, ...prev]); setShowUpload(false); };
   const handlePlayQuiz = (quiz: Quiz) => { setSelectedQuiz(quiz); setShowSettings(true); };
@@ -70,26 +97,42 @@ const Index = () => {
     >
       {/* Header */}
       <div className="px-5 pt-14 pb-6">
-        {/* Greeting */}
+        {/* Top Bar with Avatar and Settings */}
         <motion.div 
           initial={{ opacity: 0, y: -10 }} 
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="mb-8"
+          className="flex items-center justify-between mb-6"
         >
-          <h1 className="text-3xl font-bold text-white mb-1">
-            Hello, <br />
-            <span className="text-white">Shuxrat</span> <EmojiIcon type="wave" size="lg" className="ml-1" />
-          </h1>
-          <p className="text-white/50 text-sm font-medium">Ready to test your knowledge?</p>
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-white/10">
+              <img 
+                src={userProfile?.avatarUrl || defaultAvatar} 
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div>
+              <p className="text-white/50 text-xs font-medium">Welcome back</p>
+              <h1 className="text-xl font-bold text-white font-display">
+                {userProfile?.name || 'User'}
+              </h1>
+            </div>
+          </div>
+          <button 
+            onClick={() => setShowUserSettings(true)}
+            className="w-11 h-11 rounded-full glass-button flex items-center justify-center press-effect hover:bg-white/10"
+          >
+            <img src={settingsIcon} alt="Settings" className="w-6 h-6" />
+          </button>
         </motion.div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3">
-          <StatCard emoji="trophy" label="Total Score" value={stats.totalScore} index={0} />
-          <StatCard emoji="books" label="Quizzes" value={stats.totalQuizzesTaken} index={1} />
-          <StatCard emoji="target" label="Correct" value={stats.totalCorrectAnswers} index={2} />
-          <StatCard emoji="zap" label="Accuracy" value={`${accuracy}%`} index={3} />
+          <StatCard icon="trophy" label="Total Score" value={stats.totalScore} index={0} />
+          <StatCard icon="quizzes" label="Quizzes" value={stats.totalQuizzesTaken} index={1} />
+          <StatCard icon="correct" label="Correct" value={stats.totalCorrectAnswers} index={2} />
+          <StatCard icon="accuracy" label="Accuracy" value={`${accuracy}%`} index={3} />
         </div>
       </div>
 
@@ -102,7 +145,7 @@ const Index = () => {
       >
         <div className="px-5 py-6 flex-1 flex flex-col">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-white font-display">
               Your Quizzes
               {quizzes.length > 0 && (
                 <span className="ml-2 text-sm font-medium text-white/40">({quizzes.length})</span>
@@ -124,9 +167,9 @@ const Index = () => {
           ) : quizzes.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
               <div className="w-20 h-20 mb-4 rounded-[24px] glass-card flex items-center justify-center">
-                <EmojiIcon type="books" size="xl" />
+                <IconImage type="quizzes" size="xl" />
               </div>
-              <h3 className="font-bold text-white text-lg mb-2">No quizzes yet</h3>
+              <h3 className="font-bold text-white text-lg mb-2 font-display">No quizzes yet</h3>
               <p className="text-white/40 mb-6 text-sm">Upload your first quiz to get started!</p>
               <Button 
                 onClick={() => setShowUpload(true)} 
@@ -155,10 +198,21 @@ const Index = () => {
       </motion.div>
 
       {/* Dialogs */}
+      <OnboardingDialog 
+        open={showOnboarding} 
+        onComplete={handleOnboardingComplete} 
+      />
+
+      <SettingsDialog
+        open={showUserSettings}
+        onOpenChange={setShowUserSettings}
+        onProfileUpdate={handleProfileUpdate}
+      />
+
       <Dialog open={showUpload} onOpenChange={setShowUpload}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-center">Upload Quiz</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-center font-display">Upload Quiz</DialogTitle>
           </DialogHeader>
           <FileUpload onQuizUploaded={handleQuizUploaded} />
         </DialogContent>
