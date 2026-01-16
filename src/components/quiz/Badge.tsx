@@ -56,17 +56,39 @@ export function Badge({ badge, percentage, animate = true }: BadgeProps) {
     }
   };
 
+  // Get glow effect for medal
+  const getGlowStyle = () => {
+    switch (badge.type) {
+      case 'gold':
+        return {
+          boxShadow: '0 0 40px 15px rgba(251, 191, 36, 0.4), 0 0 80px 30px rgba(251, 191, 36, 0.2)',
+        };
+      case 'silver':
+        return {
+          boxShadow: '0 0 40px 15px rgba(148, 163, 184, 0.4), 0 0 80px 30px rgba(148, 163, 184, 0.2)',
+        };
+      case 'bronze':
+        return {
+          boxShadow: '0 0 40px 15px rgba(251, 146, 60, 0.4), 0 0 80px 30px rgba(251, 146, 60, 0.2)',
+        };
+      default:
+        return {
+          boxShadow: '0 0 40px 15px rgba(96, 165, 250, 0.4), 0 0 80px 30px rgba(96, 165, 250, 0.2)',
+        };
+    }
+  };
+
   // Get subtle background accent color for the achievement box
   const getAccentStyle = () => {
     switch (badge.type) {
       case 'gold':
-        return { background: 'radial-gradient(ellipse at center, rgba(251, 191, 36, 0.15) 0%, transparent 70%)' };
+        return { background: 'radial-gradient(ellipse at center, rgba(251, 191, 36, 0.25) 0%, transparent 70%)' };
       case 'silver':
-        return { background: 'radial-gradient(ellipse at center, rgba(148, 163, 184, 0.15) 0%, transparent 70%)' };
+        return { background: 'radial-gradient(ellipse at center, rgba(148, 163, 184, 0.25) 0%, transparent 70%)' };
       case 'bronze':
-        return { background: 'radial-gradient(ellipse at center, rgba(251, 146, 60, 0.15) 0%, transparent 70%)' };
+        return { background: 'radial-gradient(ellipse at center, rgba(251, 146, 60, 0.25) 0%, transparent 70%)' };
       default:
-        return { background: 'radial-gradient(ellipse at center, rgba(96, 165, 250, 0.15) 0%, transparent 70%)' };
+        return { background: 'radial-gradient(ellipse at center, rgba(96, 165, 250, 0.25) 0%, transparent 70%)' };
     }
   };
 
@@ -74,7 +96,7 @@ export function Badge({ badge, percentage, animate = true }: BadgeProps) {
     <div className="flex flex-col items-center gap-4 relative">
       {/* Subtle color accent behind the badge */}
       <div 
-        className="absolute inset-0 blur-2xl opacity-60"
+        className="absolute inset-0 blur-3xl opacity-80"
         style={getAccentStyle()}
       />
       
@@ -83,6 +105,7 @@ export function Badge({ badge, percentage, animate = true }: BadgeProps) {
         animate={{ scale: 1, rotate: 0 }}
         transition={{ type: 'spring', stiffness: 200, damping: 15, delay: 0.3 }}
         className={`relative p-6 rounded-full bg-gradient-to-br ${getBadgeColors()}`}
+        style={getGlowStyle()}
       >
         {getBadgeIcon()}
       </motion.div>

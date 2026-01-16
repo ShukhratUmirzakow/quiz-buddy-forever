@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { saveUserProfile, UserProfile } from '@/lib/userStorage';
-import defaultAvatar from '@/assets/user.png';
+import defaultAvatar from '@/assets/user-default.png';
+import welcomeIcon from '@/assets/welcome.png';
 
 interface OnboardingDialogProps {
   open: boolean;
@@ -43,6 +44,10 @@ export function OnboardingDialog({ open, onComplete }: OnboardingDialogProps) {
       setError('Name must be at least 2 characters');
       return;
     }
+    if (trimmedName.length > 12) {
+      setError('Name must be 12 characters or less');
+      return;
+    }
 
     const profile: UserProfile = {
       name: trimmedName,
@@ -58,7 +63,9 @@ export function OnboardingDialog({ open, onComplete }: OnboardingDialogProps) {
     <Dialog open={open} onOpenChange={() => {}}>
       <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-2">Welcome! 👋</DialogTitle>
+          <DialogTitle className="text-2xl font-bold text-center mb-2 flex items-center justify-center gap-2">
+            Welcome! <img src={welcomeIcon} alt="Welcome" className="w-7 h-7" />
+          </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-6 py-4">
@@ -95,10 +102,12 @@ export function OnboardingDialog({ open, onComplete }: OnboardingDialogProps) {
               id="name"
               value={name}
               onChange={(e) => {
-                setName(e.target.value);
+                const value = e.target.value.slice(0, 12);
+                setName(value);
                 setError('');
               }}
               placeholder="Enter your name"
+              maxLength={12}
               className="h-14 rounded-2xl glass-card border-white/10 bg-white/5 text-white placeholder:text-white/30 text-lg font-medium focus:border-white/20"
               autoFocus
             />

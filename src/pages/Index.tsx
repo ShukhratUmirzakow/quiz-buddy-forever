@@ -18,8 +18,8 @@ import { StatCard } from '@/components/StatCard';
 import { IconImage } from '@/components/IconImage';
 import { getUserProfile, UserProfile } from '@/lib/userStorage';
 import { useLanguage } from '@/hooks/useLanguage';
-import defaultAvatar from '@/assets/user.png';
-import settingsIcon from '@/assets/settings.png';
+import defaultAvatar from '@/assets/user-default.png';
+import settingsIcon from '@/assets/service.png';
 
 const Index = () => {
   const navigate = useNavigate();

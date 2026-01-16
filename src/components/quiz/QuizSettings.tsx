@@ -69,7 +69,7 @@ export function QuizSettingsDialog({ quiz, open, onOpenChange, onStart }: QuizSe
               <AnimatePresence>
                 {settings.questionRange.enabled && (
                   <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.25 }} className="overflow-hidden">
-                    <div className="mt-4 flex items-center gap-3">
+                    <div className="mt-4 flex items-center gap-2">
                       <div className="flex-1 min-w-0">
                         <Label className="text-xs text-white/40 mb-1.5 block font-semibold">{t('from')}</Label>
                         <Input 
@@ -78,10 +78,10 @@ export function QuizSettingsDialog({ quiz, open, onOpenChange, onStart }: QuizSe
                           max={quiz.questions.length} 
                           value={settings.questionRange.start || ''} 
                           onChange={(e) => setSettings(p => ({ ...p, questionRange: { ...p.questionRange, start: e.target.value ? parseInt(e.target.value) : 0 } }))} 
-                          className="h-11 rounded-lg text-center font-bold text-base bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-white/20 focus:ring-offset-0" 
+                          className="h-10 rounded-xl text-center font-bold text-sm bg-white/5 border-white/10 text-white focus:ring-1 focus:ring-white/20 focus:ring-offset-0 focus:border-white/20" 
                         />
                       </div>
-                      <span className="text-white/30 mt-5 font-bold text-base shrink-0">—</span>
+                      <span className="text-white/30 mt-5 font-bold text-sm shrink-0">—</span>
                       <div className="flex-1 min-w-0">
                         <Label className="text-xs text-white/40 mb-1.5 block font-semibold">{t('to')}</Label>
                         <Input 
@@ -90,7 +90,7 @@ export function QuizSettingsDialog({ quiz, open, onOpenChange, onStart }: QuizSe
                           max={quiz.questions.length} 
                           value={settings.questionRange.end || ''} 
                           onChange={(e) => setSettings(p => ({ ...p, questionRange: { ...p.questionRange, end: e.target.value ? parseInt(e.target.value) : 0 } }))} 
-                          className="h-11 rounded-lg text-center font-bold text-base bg-white/5 border-white/10 text-white focus:ring-2 focus:ring-white/20 focus:ring-offset-0" 
+                          className="h-10 rounded-xl text-center font-bold text-sm bg-white/5 border-white/10 text-white focus:ring-1 focus:ring-white/20 focus:ring-offset-0 focus:border-white/20" 
                         />
                       </div>
                     </div>

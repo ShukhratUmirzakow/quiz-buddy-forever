@@ -7,8 +7,10 @@ import { Label } from '@/components/ui/label';
 import { getUserProfile, saveUserProfile, UserProfile } from '@/lib/userStorage';
 import { Language, LANGUAGES, getCurrentLanguage } from '@/lib/i18n';
 import { useLanguage } from '@/hooks/useLanguage';
-import { EnglishFlag, UzbekFlag, RussianFlag } from '@/components/FlagIcons';
-import defaultAvatar from '@/assets/user.png';
+import defaultAvatar from '@/assets/user-default.png';
+import flagEn from '@/assets/flag-en.png';
+import flagUz from '@/assets/flag-uz.png';
+import flagRu from '@/assets/flag-ru.png';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -69,6 +71,10 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
     }
     if (trimmedName.length < 2) {
       setError('Name must be at least 2 characters');
+      return;
+    }
+    if (trimmedName.length > 12) {
+      setError('Name must be 12 characters or less');
       return;
     }
 
@@ -143,10 +149,12 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
               id="settings-name"
               value={name}
               onChange={(e) => {
-                setName(e.target.value);
+                const value = e.target.value.slice(0, 12);
+                setName(value);
                 setError('');
               }}
               placeholder={t('enter_your_name')}
+              maxLength={12}
               className="h-12 rounded-xl glass-card border-white/10 bg-white/5 text-white placeholder:text-white/30 font-medium focus:border-white/20"
             />
             {error && (
@@ -161,7 +169,7 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
             </Label>
             <div className="grid grid-cols-3 gap-2">
               {LANGUAGES.map((lang) => {
-                const FlagComponent = lang.code === 'en' ? EnglishFlag : lang.code === 'uz' ? UzbekFlag : RussianFlag;
+                const flagSrc = lang.code === 'en' ? flagEn : lang.code === 'uz' ? flagUz : flagRu;
                 return (
                   <button
                     key={lang.code}
@@ -174,8 +182,8 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
                       }
                     `}
                   >
-                    <div className="w-8 h-8 rounded-full overflow-hidden flex items-center justify-center">
-                      <FlagComponent />
+                    <div className="w-8 h-8 rounded-xl overflow-hidden flex items-center justify-center">
+                      <img src={flagSrc} alt={lang.name} className="w-full h-full object-cover" />
                     </div>
                     <span className="text-xs text-white/70 font-medium">{lang.nativeName}</span>
                   </button>
