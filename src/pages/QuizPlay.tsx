@@ -239,10 +239,10 @@ const QuizPlay = () => {
               <p className="text-white/50 font-medium mb-6">{t('take_your_time')}</p>
               <Button
                 onClick={handlePauseToggle}
-                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg press-effect"
+                className="w-full h-14 rounded-2xl gradient-success text-white font-bold text-lg press-effect flex items-center justify-center gap-2"
               >
-                <Play className="w-5 h-5 mr-2" strokeWidth={2.5} />
-                {t('resume')}
+                <Play className="w-5 h-5" strokeWidth={2.5} />
+                <span>{t('resume')}</span>
               </Button>
             </motion.div>
           </motion.div>

@@ -6,7 +6,7 @@ import confetti from 'canvas-confetti';
 import { QuizAttempt, getBadge } from '@/types/quiz';
 import { Badge } from '@/components/quiz/Badge';
 import { Button } from '@/components/ui/button';
-import { IconImage } from '@/components/IconImage';
+import checkIcon from '@/assets/check.png';
 import { BackgroundAccent } from '@/components/BackgroundAccent';
 import { AnswerReviewModal } from '@/components/AnswerReviewModal';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -58,7 +58,7 @@ const QuizResults = () => {
       
       <div className="px-5 pt-14 pb-6 text-center relative z-10">
         <motion.h1 initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-2xl font-bold text-white mb-1 flex items-center justify-center gap-2">
-          {t('quiz_complete')} <IconImage type="puzzle" size="lg" />
+          {t('quiz_complete')} <img src={checkIcon} alt="Complete" className="w-8 h-8" />
         </motion.h1>
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="text-white/50 font-medium text-sm">{attempt.quizName}</motion.p>
       </div>
@@ -106,6 +106,7 @@ const QuizResults = () => {
         open={showFullscreen} 
         onOpenChange={setShowFullscreen} 
         answers={attempt.answers}
+        quizId={attempt.quizId}
       />
     </motion.div>
   );
