@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { getUserProfile, saveUserProfile, UserProfile } from '@/lib/userStorage';
+import { Language, LANGUAGES, getCurrentLanguage, setCurrentLanguage } from '@/lib/i18n';
+import { useLanguage } from '@/hooks/useLanguage';
 import defaultAvatar from '@/assets/user.png';
 
 interface SettingsDialogProps {
@@ -17,7 +19,9 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
   const [name, setName] = useState('');
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [selectedLanguage, setSelectedLanguage] = useState<Language>(getCurrentLanguage());
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { t, changeLanguage } = useLanguage();
 
   useEffect(() => {
     if (open) {
@@ -26,6 +30,7 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
         setName(profile.name);
         setAvatarPreview(profile.avatarUrl);
       }
+      setSelectedLanguage(getCurrentLanguage());
     }
   }, [open]);
 
@@ -51,16 +56,23 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
     }
   };
 
+  const handleLanguageSelect = (lang: Language) => {
+    setSelectedLanguage(lang);
+  };
+
   const handleSave = () => {
     const trimmedName = name.trim();
     if (!trimmedName) {
-      setError('Please enter your name');
+      setError(t('enter_your_name'));
       return;
     }
     if (trimmedName.length < 2) {
       setError('Name must be at least 2 characters');
       return;
     }
+
+    // Save language
+    changeLanguage(selectedLanguage);
 
     const profile = getUserProfile();
     if (profile) {
@@ -79,50 +91,52 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-center">Settings</DialogTitle>
+          <DialogTitle className="text-xl font-bold text-center">{t('settings')}</DialogTitle>
         </DialogHeader>
 
-        <div className="flex flex-col items-center gap-5 py-4">
+        <div className="flex flex-col gap-5 py-4">
           {/* Avatar Selection */}
-          <div className="relative">
-            <motion.button
-              whileTap={{ scale: 0.95 }}
-              onClick={() => fileInputRef.current?.click()}
-              className="w-20 h-20 rounded-full overflow-hidden glass-card border-2 border-white/20 press-effect"
-            >
-              <img
-                src={avatarPreview || defaultAvatar}
-                alt="Avatar"
-                className="w-full h-full object-cover"
-              />
-            </motion.button>
-            {avatarPreview && (
-              <button
-                onClick={handleRemoveAvatar}
-                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold"
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative">
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => fileInputRef.current?.click()}
+                className="w-20 h-20 rounded-full overflow-hidden glass-card border-2 border-white/20 press-effect"
               >
-                ×
-              </button>
-            )}
+                <img
+                  src={avatarPreview || defaultAvatar}
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </motion.button>
+              {avatarPreview && (
+                <button
+                  onClick={handleRemoveAvatar}
+                  className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="text-white/50 text-xs font-medium hover:text-white/70 transition-colors"
+            >
+              {t('change_photo')}
+            </button>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarChange}
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="text-white/50 text-xs font-medium hover:text-white/70 transition-colors"
-          >
-            Change photo
-          </button>
 
           {/* Name Input */}
-          <div className="w-full space-y-2">
+          <div className="space-y-2">
             <Label htmlFor="settings-name" className="text-white/60 text-sm font-semibold">
-              Name
+              {t('name')}
             </Label>
             <Input
               id="settings-name"
@@ -131,7 +145,7 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
                 setName(e.target.value);
                 setError('');
               }}
-              placeholder="Enter your name"
+              placeholder={t('enter_your_name')}
               className="h-12 rounded-xl glass-card border-white/10 bg-white/5 text-white placeholder:text-white/30 font-medium focus:border-white/20"
             />
             {error && (
@@ -139,20 +153,45 @@ export function SettingsDialog({ open, onOpenChange, onProfileUpdate }: Settings
             )}
           </div>
 
+          {/* Language Selection */}
+          <div className="space-y-2">
+            <Label className="text-white/60 text-sm font-semibold">
+              {t('language')}
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {LANGUAGES.map((lang) => (
+                <button
+                  key={lang.code}
+                  onClick={() => handleLanguageSelect(lang.code)}
+                  className={`
+                    flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all press-effect
+                    ${selectedLanguage === lang.code 
+                      ? 'glass-card border-white/30 bg-white/10' 
+                      : 'glass-button hover:bg-white/10'
+                    }
+                  `}
+                >
+                  <span className="text-2xl">{lang.flag}</span>
+                  <span className="text-xs text-white/70 font-medium">{lang.nativeName}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Save Button */}
-          <div className="w-full flex gap-3 pt-2">
+          <div className="flex gap-3 pt-2">
             <Button
               onClick={() => onOpenChange(false)}
               variant="ghost"
               className="flex-1 h-12 rounded-xl glass-button text-white font-semibold press-effect hover:bg-white/10"
             >
-              Cancel
+              {t('cancel')}
             </Button>
             <Button
               onClick={handleSave}
               className="flex-1 h-12 rounded-xl gradient-success text-white font-semibold press-effect"
             >
-              Save
+              {t('save')}
             </Button>
           </div>
         </div>

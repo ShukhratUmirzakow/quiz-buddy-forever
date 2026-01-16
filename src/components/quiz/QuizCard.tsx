@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Trash2, ChevronRight, Trophy } from 'lucide-react';
 import { Quiz } from '@/types/quiz';
-import { EmojiIcon } from '@/components/EmojiIcon';
+import { IconImage } from '@/components/IconImage';
+import { useLanguage } from '@/hooks/useLanguage';
 
 interface QuizCardProps {
   quiz: Quiz;
@@ -11,6 +12,8 @@ interface QuizCardProps {
 }
 
 export function QuizCard({ quiz, index, onPlay, onDelete }: QuizCardProps) {
+  const { t } = useLanguage();
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
@@ -21,9 +24,9 @@ export function QuizCard({ quiz, index, onPlay, onDelete }: QuizCardProps) {
       className="glass-card rounded-[20px] p-4"
     >
       <div className="flex items-center gap-4">
-        {/* Icon */}
+        {/* Icon - using quizzes.png */}
         <div className="w-12 h-12 rounded-2xl glass-button flex items-center justify-center flex-shrink-0">
-          <EmojiIcon type="books" size="lg" />
+          <IconImage type="quizzes" size="lg" />
         </div>
 
         {/* Content */}
@@ -33,7 +36,7 @@ export function QuizCard({ quiz, index, onPlay, onDelete }: QuizCardProps) {
           </h3>
           
           <div className="flex items-center gap-2 text-xs text-white/40 font-medium">
-            <span>{quiz.questions.length} questions</span>
+            <span>{quiz.questions.length} {t('questions')}</span>
             {quiz.totalAttempts > 0 && (
               <>
                 <span className="text-white/20">•</span>
