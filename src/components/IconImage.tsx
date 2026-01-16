@@ -7,8 +7,10 @@ import correctIcon from '@/assets/correct.png';
 import congratsIcon from '@/assets/congrats.png';
 import settingsIcon from '@/assets/settings.png';
 import userIcon from '@/assets/user.png';
+import quizzesIcon from '@/assets/quizzes.png';
+import puzzleIcon from '@/assets/puzzle.png';
 
-type IconType = 'trophy' | 'accuracy' | 'correct' | 'congrats' | 'settings' | 'user' | 'quizzes';
+type IconType = 'trophy' | 'accuracy' | 'correct' | 'congrats' | 'settings' | 'user' | 'quizzes' | 'puzzle';
 
 const iconMap: Record<IconType, string> = {
   trophy: trophyIcon,
@@ -17,7 +19,8 @@ const iconMap: Record<IconType, string> = {
   congrats: congratsIcon,
   settings: settingsIcon,
   user: userIcon,
-  quizzes: accuracyIcon, // Using accuracy as quizzes icon since it looks like books
+  quizzes: quizzesIcon,
+  puzzle: puzzleIcon,
 };
 
 interface IconImageProps {
