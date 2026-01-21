@@ -41,9 +41,20 @@ const QuizResults = () => {
   const displayedAnswers = showWrongOnly ? attempt.answers.filter(a => !a.isCorrect) : attempt.answers;
 
   const handleRetryWrong = () => {
-    const wrongQuestions = attempt.answers.filter(a => !a.isCorrect).map(a => a.questionIndex + 1);
-    if (wrongQuestions.length === 0) return;
-    sessionStorage.setItem('quizSettings', JSON.stringify({ quizId: attempt.quizId, settings: { shuffleQuestions: false, shuffleAnswers: true, fastMode: false, questionRange: { enabled: true, start: Math.min(...wrongQuestions), end: Math.max(...wrongQuestions) } } }));
+    // Get the actual question IDs (not indices) of wrong answers
+    const wrongQuestionIds = attempt.answers.filter(a => !a.isCorrect).map(a => a.questionIndex + 1);
+    if (wrongQuestionIds.length === 0) return;
+    // Use specificQuestionIds to only play exactly the wrong questions
+    sessionStorage.setItem('quizSettings', JSON.stringify({ 
+      quizId: attempt.quizId, 
+      settings: { 
+        shuffleQuestions: false, 
+        shuffleAnswers: true, 
+        fastMode: false, 
+        questionRange: { enabled: false, start: 1, end: attempt.totalQuestions },
+        specificQuestionIds: wrongQuestionIds
+      } 
+    }));
     navigate(`/quiz/${attempt.quizId}`);
   };
 
