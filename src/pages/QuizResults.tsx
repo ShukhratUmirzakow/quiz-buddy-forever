@@ -41,8 +41,10 @@ const QuizResults = () => {
   const displayedAnswers = showWrongOnly ? attempt.answers.filter(a => !a.isCorrect) : attempt.answers;
 
   const handleRetryWrong = () => {
-    // Get the actual question IDs (not indices) of wrong answers
-    const wrongQuestionIds = attempt.answers.filter(a => !a.isCorrect).map(a => a.questionIndex + 1);
+    // Get the actual question IDs from wrong answers
+    const wrongQuestionIds = attempt.answers
+      .filter(a => !a.isCorrect)
+      .map(a => (a as any).questionId || a.questionIndex + 1); // Use questionId if available
     if (wrongQuestionIds.length === 0) return;
     // Use specificQuestionIds to only play exactly the wrong questions
     sessionStorage.setItem('quizSettings', JSON.stringify({ 

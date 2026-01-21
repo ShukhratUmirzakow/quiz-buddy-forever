@@ -254,3 +254,8 @@ h1, h2, h3, .font-display {
 .emoji-cross {
   background-image: url('https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/274c.svg');
 }
+
+/* Hide Lovable badge */
+#lovable-badge {
+  display: none !important;
+}
