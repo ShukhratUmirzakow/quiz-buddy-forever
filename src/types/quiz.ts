@@ -1,3 +1,12 @@
+export interface QuizAnswer {
+  questionIndex: number;
+  questionId?: number; // Actual question ID for retry logic
+  selectedAnswer: string;
+  correctAnswer: string;
+  isCorrect: boolean;
+  questionText: string;
+}
+
 export interface QuizQuestion {
   id: number;
   question: string;
@@ -38,13 +47,7 @@ export interface QuizAttempt {
   totalQuestions: number;
   timeSpent: number;
   completedAt: number;
-  answers: {
-    questionIndex: number;
-    selectedAnswer: string;
-    correctAnswer: string;
-    isCorrect: boolean;
-    questionText: string;
-  }[];
+  answers: QuizAnswer[];
 }
 
 export interface UserStats {

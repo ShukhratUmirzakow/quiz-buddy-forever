@@ -159,11 +159,12 @@ const QuizPlay = () => {
 
     const isCorrect = label === currentQuestion.correctAnswer;
 
-    // Add answer to array
+    // Add answer to array - store actual question ID for retry logic
     setAnswers(prev => [
       ...prev,
       {
         questionIndex: currentIndex,
+        questionId: currentQuestion.id, // Store actual question ID
         selectedAnswer: label,
         correctAnswer: currentQuestion.correctAnswer,
         isCorrect,
