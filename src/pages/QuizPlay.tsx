@@ -31,6 +31,7 @@ const QuizPlay = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [showResult, setShowResult] = useState(false);
   const [answers, setAnswers] = useState<QuizAttempt['answers']>([]);
+  const answersRef = useRef<QuizAttempt['answers']>([]);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
@@ -122,8 +123,8 @@ const QuizPlay = () => {
     if (isLastQuestion) {
       setIsTimerRunning(false);
       
-      // Use the answers array directly - it already has all answered questions
-      const finalAnswers = [...answers];
+      // Use ref for immediate access (especially important for fast mode)
+      const finalAnswers = answersRef.current;
       const correctCount = finalAnswers.filter(a => a.isCorrect).length;
       const score = Math.round((correctCount / questions.length) * 100);
 
@@ -160,17 +161,19 @@ const QuizPlay = () => {
     const isCorrect = label === currentQuestion.correctAnswer;
 
     // Add answer to array - store actual question ID for retry logic
-    setAnswers(prev => [
-      ...prev,
-      {
-        questionIndex: currentIndex,
-        questionId: currentQuestion.id, // Store actual question ID
-        selectedAnswer: label,
-        correctAnswer: currentQuestion.correctAnswer,
-        isCorrect,
-        questionText: currentQuestion.question,
-      },
-    ]);
+    const newAnswer = {
+      questionIndex: currentIndex,
+      questionId: currentQuestion.id, // Store actual question ID
+      selectedAnswer: label,
+      correctAnswer: currentQuestion.correctAnswer,
+      isCorrect,
+      questionText: currentQuestion.question,
+    };
+    
+    // Update both state and ref (ref for fast mode to access immediately)
+    const updatedAnswers = [...answers, newAnswer];
+    answersRef.current = updatedAnswers;
+    setAnswers(updatedAnswers);
 
     if (isCorrect) {
       hasTriggeredConfetti.current = false;
