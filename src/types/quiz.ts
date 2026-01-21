@@ -27,6 +27,7 @@ export interface QuizSettings {
     start: number;
     end: number;
   };
+  specificQuestionIds?: number[]; // For retry wrong - specific question IDs to play
 }
 
 export interface QuizAttempt {

@@ -7,6 +7,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.j
 
 export async function parseQuizFile(file: File): Promise<Quiz> {
   const extension = file.name.split('.').pop()?.toLowerCase();
+  const fileName = file.name.replace(/\.[^/.]+$/, ''); // Get filename without extension
   let content = '';
 
   switch (extension) {
@@ -23,7 +24,7 @@ export async function parseQuizFile(file: File): Promise<Quiz> {
       throw new Error(`Unsupported file format: ${extension}. Please use .txt, .docx, or .pdf`);
   }
 
-  return parseQuizContent(content);
+  return parseQuizContent(content, fileName);
 }
 
 async function parseDocx(file: File): Promise<string> {
@@ -49,7 +50,174 @@ async function parsePdf(file: File): Promise<string> {
   return text;
 }
 
-function parseQuizContent(content: string): Quiz {
+// Detect format type based on content
+function detectFormat(content: string): 'default' | 'equals' | 'asterisk' {
+  // Check for ===== format (with =====#)
+  if (content.includes('=====') && content.includes('+++++')) {
+    return 'equals';
+  }
+  // Check for *A) asterisk format
+  if (/\*[A-D]\)/.test(content)) {
+    return 'asterisk';
+  }
+  // Default format (Q1:, A), ANSWER:)
+  return 'default';
+}
+
+function parseQuizContent(content: string, fileName: string): Quiz {
+  const format = detectFormat(content);
+  
+  switch (format) {
+    case 'equals':
+      return parseEqualsFormat(content, fileName);
+    case 'asterisk':
+      return parseAsteriskFormat(content, fileName);
+    default:
+      return parseDefaultFormat(content);
+  }
+}
+
+// Parse ===== format: questions with ===== options and =====#correct
+function parseEqualsFormat(content: string, fileName: string): Quiz {
+  const questions: QuizQuestion[] = [];
+  
+  // Split by +++++ to get individual question blocks
+  const blocks = content.split('+++++').filter(block => block.trim());
+  
+  for (const block of blocks) {
+    const lines = block.split('\n').map(line => line.trim()).filter(line => line);
+    if (lines.length === 0) continue;
+    
+    // First line should be question (may start with number)
+    const questionLine = lines[0];
+    const questionMatch = questionLine.match(/^\d+\.\s*(.+)/);
+    const questionText = questionMatch ? questionMatch[1].trim() : questionLine.trim();
+    
+    if (!questionText) continue;
+    
+    // Find options (lines starting with =====)
+    const options: { label: string; text: string }[] = [];
+    let correctAnswer = 'A';
+    const labels = ['A', 'B', 'C', 'D'];
+    let labelIndex = 0;
+    
+    for (let i = 1; i < lines.length && labelIndex < 4; i++) {
+      const line = lines[i];
+      
+      // Check if correct answer (=====#)
+      if (line.startsWith('=====#')) {
+        const optionText = line.replace('=====#', '').trim();
+        if (optionText) {
+          const label = labels[labelIndex];
+          correctAnswer = label;
+          options.push({ label, text: optionText });
+          labelIndex++;
+        }
+      } else if (line.startsWith('=====')) {
+        const optionText = line.replace('=====', '').trim();
+        if (optionText) {
+          options.push({ label: labels[labelIndex], text: optionText });
+          labelIndex++;
+        }
+      }
+    }
+    
+    if (options.length >= 2) {
+      questions.push({
+        id: questions.length + 1,
+        question: questionText,
+        options,
+        correctAnswer,
+      });
+    }
+  }
+  
+  if (questions.length === 0) {
+    throw new Error('No valid questions found. Please check your quiz format.');
+  }
+  
+  return {
+    id: crypto.randomUUID(),
+    name: fileName,
+    questions,
+    createdAt: Date.now(),
+    totalAttempts: 0,
+    bestScore: 0,
+  };
+}
+
+// Parse *A) asterisk format: *A) marks correct answer
+function parseAsteriskFormat(content: string, fileName: string): Quiz {
+  const questions: QuizQuestion[] = [];
+  const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+  
+  let currentQuestion: { text: string; options: { label: string; text: string }[]; correctAnswer: string } | null = null;
+  
+  for (const line of lines) {
+    // Skip SourceURL and other metadata
+    if (line.startsWith('SourceURL:')) continue;
+    
+    // Check for question (starts with number.)
+    const questionMatch = line.match(/^(\d+)\.\s*(.+)/);
+    if (questionMatch) {
+      // Save previous question
+      if (currentQuestion && currentQuestion.options.length >= 2) {
+        questions.push({
+          id: questions.length + 1,
+          question: currentQuestion.text,
+          options: currentQuestion.options,
+          correctAnswer: currentQuestion.correctAnswer,
+        });
+      }
+      
+      currentQuestion = {
+        text: questionMatch[2].trim(),
+        options: [],
+        correctAnswer: 'A',
+      };
+      continue;
+    }
+    
+    // Check for options (A), B), C), D) with optional * prefix)
+    const optionMatch = line.match(/^(\*)?([A-D])\)\s*(.+)/i);
+    if (optionMatch && currentQuestion) {
+      const isCorrect = optionMatch[1] === '*';
+      const label = optionMatch[2].toUpperCase();
+      const text = optionMatch[3].trim();
+      
+      currentQuestion.options.push({ label, text });
+      if (isCorrect) {
+        currentQuestion.correctAnswer = label;
+      }
+    }
+  }
+  
+  // Don't forget last question
+  if (currentQuestion && currentQuestion.options.length >= 2) {
+    questions.push({
+      id: questions.length + 1,
+      question: currentQuestion.text,
+      options: currentQuestion.options,
+      correctAnswer: currentQuestion.correctAnswer,
+    });
+  }
+  
+  if (questions.length === 0) {
+    throw new Error('No valid questions found. Please check your quiz format.');
+  }
+  
+  return {
+    id: crypto.randomUUID(),
+    name: fileName,
+    questions,
+    createdAt: Date.now(),
+    totalAttempts: 0,
+    bestScore: 0,
+  };
+}
+
+// Original default format parser
+function parseDefaultFormat(content: string): Quiz {
   const lines = content.split('\n').map(line => line.trim()).filter(line => line);
   
   // Find quiz name
@@ -167,12 +335,16 @@ export function prepareQuizQuestions(
     shuffleQuestions: boolean;
     shuffleAnswers: boolean;
     range?: { start: number; end: number };
+    specificQuestionIds?: number[]; // For retry wrong - specific question IDs
   }
 ): QuizQuestion[] {
   let prepared = [...questions];
 
-  // Apply range first
-  if (settings.range) {
+  // If specific question IDs provided (retry wrong), use those
+  if (settings.specificQuestionIds && settings.specificQuestionIds.length > 0) {
+    prepared = prepared.filter(q => settings.specificQuestionIds!.includes(q.id));
+  } else if (settings.range) {
+    // Apply range only if no specific IDs
     prepared = prepared.slice(settings.range.start - 1, settings.range.end);
   }
 

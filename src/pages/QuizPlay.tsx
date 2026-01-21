@@ -88,6 +88,7 @@ const QuizPlay = () => {
           shuffleQuestions: settings.shuffleQuestions,
           shuffleAnswers: settings.shuffleAnswers,
           range,
+          specificQuestionIds: settings.specificQuestionIds,
         });
 
         setQuestions(preparedQuestions);
